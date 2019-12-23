@@ -667,7 +667,12 @@ private:
             // get fpkm
             std::size_t found_fpkm = tx.find("|", found_ne + 1);
             if (found_fpkm != std::string::npos) {
-                tr.fpkm = tx.substr(found_ne + 1, found_fpkm - found_ne - 1);
+                if((found_fpkm - found_ne - 1)==0){
+                    tr.fpkm = "0";
+                }
+                else{
+                    tr.fpkm = tx.substr(found_ne + 1, found_fpkm - found_ne - 1);
+                }
             } else {
                 std::cerr << "ERROR #5" << std::endl;
                 exit(-1);
@@ -675,7 +680,12 @@ private:
             // get tpm
             std::size_t found_tpm = tx.find("|", found_fpkm + 1);
             if (found_tpm != std::string::npos) {
-                tr.tpm = tx.substr(found_fpkm + 1, found_tpm - found_fpkm - 1);
+                if((found_fpkm - found_ne - 1)==0){
+                    tr.tpm = "0";
+                }
+                else {
+                    tr.tpm = tx.substr(found_fpkm + 1, found_tpm - found_fpkm - 1);
+                }
             } else {
                 std::cerr << "ERROR #6" << std::endl;
                 exit(-1);
@@ -683,7 +693,12 @@ private:
             // get cov
             std::size_t found_cov = tx.find("|", found_tpm + 1);
             if (found_cov != std::string::npos) {
-                tr.cov = tx.substr(found_tpm + 1, found_cov - found_tpm - 1);
+                if((found_fpkm - found_ne - 1)==0){
+                    tr.cov = "0";
+                }
+                else{
+                    tr.cov = tx.substr(found_tpm + 1, found_cov - found_tpm - 1);
+                }
             } else {
                 std::cerr << "ERROR #7" << std::endl;
                 exit(-1);
@@ -707,12 +722,16 @@ private:
 
         std::string tline,uid,ulid;
         std::vector<TR> trs;
+        int line_n = 0;
         while (std::getline(tissue_track_stream,tline)) {
             break_tracking(trs,tline);
+            line_n+=1;
+//            std::cout<<line_n<<std::endl;
             for(auto tr : trs){
                 uid = tissue+"_"+tr.qj+"_"+tr.old_tid;
                 ulid = tissue+"_"+tr.qj+"_"+tr.old_loc;
                 // now that we have this information - we need to store it in a realtionship
+//                std::cout<<uid<<"\t"<<tr.fpkm<<"\t"<<tr.tpm<<"\t"<<tr.cov<<std::endl;
                 this->mtm_it = this->mtm.insert(std::make_pair(uid,MT(uid,tr.old_loc,std::stof(tr.fpkm),std::stof(tr.tpm),std::stof(tr.cov),tissue,tr.qj)));
                 // create an entry about the locus information here
                 this->loci_sample_it = loci_sample.insert(std::make_pair(ulid,std::vector<MTM_IT>{}));
