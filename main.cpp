@@ -18,7 +18,7 @@
 
 // Types of transcripts
 enum TYPE {REAL_TX        = 1,
-           NONINTRONIC_TX = 2,
+           SPLICING_TX = 2,
            INTRONIC_TX    = 3,
            POLYMERASE_TX  = 4,
     UNDEFINED_TX      = -1};
@@ -174,8 +174,8 @@ struct TR{
 };
 
 struct Stats{
-    std::vector<int> num_tx_per_all_loc,num_tx_per_all_loc_real,num_tx_per_all_loc_intronic,num_tx_per_all_loc_nonintronic,num_tx_per_all_loc_polymerase,num_tx_per_all_loc_left;
-    std::vector<float> sum_tx_per_all_loc,sum_tx_per_all_loc_real,sum_tx_per_all_loc_intronic,sum_tx_per_all_loc_nonintronic,sum_tx_per_all_loc_polymerase,sum_tx_per_all_loc_left;
+    std::vector<int> num_tx_per_all_loc,num_tx_per_all_loc_real,num_tx_per_all_loc_intronic,num_tx_per_all_loc_splicing,num_tx_per_all_loc_polymerase,num_tx_per_all_loc_left;
+    std::vector<float> sum_tx_per_all_loc,sum_tx_per_all_loc_real,sum_tx_per_all_loc_intronic,sum_tx_per_all_loc_splicing,sum_tx_per_all_loc_polymerase,sum_tx_per_all_loc_left;
     void save_all_tx_stats(std::string base_out_fname){
         if(num_tx_per_all_loc.size()!=num_tx_per_all_loc_real.size()) {
             std::cerr<<"all loc vectors not equal size"<<std::endl;
@@ -189,15 +189,15 @@ struct Stats{
             std::cerr<<"num_tx_per_all_loc_intronic: "<<num_tx_per_all_loc_intronic.size()<<std::endl;
             exit(-1);
         }
-        else if(num_tx_per_all_loc_intronic.size()!=num_tx_per_all_loc_nonintronic.size()) {
+        else if(num_tx_per_all_loc_intronic.size() != num_tx_per_all_loc_splicing.size()) {
             std::cerr<<"all loc vectors not equal size"<<std::endl;
             std::cerr<<"num_tx_per_all_loc_intronic: "<<num_tx_per_all_loc_intronic.size()<<std::endl;
-            std::cerr<<"num_tx_per_all_loc_nonintronic: "<<num_tx_per_all_loc_nonintronic.size()<<std::endl;
+            std::cerr << "num_tx_per_all_loc_splicing: " << num_tx_per_all_loc_splicing.size() << std::endl;
             exit(-1);
         }
-        else if(num_tx_per_all_loc_nonintronic.size()!=num_tx_per_all_loc_polymerase.size()) {
+        else if(num_tx_per_all_loc_splicing.size() != num_tx_per_all_loc_polymerase.size()) {
             std::cerr<<"all loc vectors not equal size"<<std::endl;
-            std::cerr<<"num_tx_per_all_loc_nonintronic: "<<num_tx_per_all_loc_nonintronic.size()<<std::endl;
+            std::cerr << "num_tx_per_all_loc_splicing: " << num_tx_per_all_loc_splicing.size() << std::endl;
             std::cerr<<"num_tx_per_all_loc_polymerase: "<<num_tx_per_all_loc_polymerase.size()<<std::endl;
             exit(-1);
         }
@@ -210,28 +210,28 @@ struct Stats{
         else{
             std::string num_tx_per_all_loc_fname = base_out_fname+".num_tx_per_all_loc";
             std::ofstream num_tx_per_all_loc_ss(num_tx_per_all_loc_fname.c_str());
-            num_tx_per_all_loc_ss<<"all,real,intronic,nonintronic,polymerase,left"<<std::endl;
+            num_tx_per_all_loc_ss<<"all,real,intronic,splicing,polymerase,left"<<std::endl;
 
             for(int i=0;i<this->num_tx_per_all_loc.size();i++){
-                num_tx_per_all_loc_ss<<num_tx_per_all_loc[i]<<","<<num_tx_per_all_loc_real[i]<<","<<num_tx_per_all_loc_intronic[i]<<","<<num_tx_per_all_loc_nonintronic[i]<<","<<num_tx_per_all_loc_polymerase[i]<<","<<num_tx_per_all_loc_left[i]<<std::endl;
+                num_tx_per_all_loc_ss << num_tx_per_all_loc[i] << "," << num_tx_per_all_loc_real[i] << "," << num_tx_per_all_loc_intronic[i] << "," << num_tx_per_all_loc_splicing[i] << "," << num_tx_per_all_loc_polymerase[i] << "," << num_tx_per_all_loc_left[i] << std::endl;
             }
 
             num_tx_per_all_loc_ss.close();
 
             std::string sum_tx_per_all_loc_fname = base_out_fname+".sum_tx_per_all_loc";
             std::ofstream sum_tx_per_all_loc_ss(sum_tx_per_all_loc_fname.c_str());
-            sum_tx_per_all_loc_ss<<"all,real,intronic,nonintronic,polymerase,left"<<std::endl;
+            sum_tx_per_all_loc_ss<<"all,real,intronic,splicing,polymerase,left"<<std::endl;
 
             for(int i=0;i<this->sum_tx_per_all_loc.size();i++){
-                sum_tx_per_all_loc_ss<<sum_tx_per_all_loc[i]<<","<<sum_tx_per_all_loc_real[i]<<","<<sum_tx_per_all_loc_intronic[i]<<","<<sum_tx_per_all_loc_nonintronic[i]<<","<<sum_tx_per_all_loc_polymerase[i]<<","<<sum_tx_per_all_loc_left[i]<<std::endl;
+                sum_tx_per_all_loc_ss << sum_tx_per_all_loc[i] << "," << sum_tx_per_all_loc_real[i] << "," << sum_tx_per_all_loc_intronic[i] << "," << sum_tx_per_all_loc_splicing[i] << "," << sum_tx_per_all_loc_polymerase[i] << "," << sum_tx_per_all_loc_left[i] << std::endl;
             }
 
             sum_tx_per_all_loc_ss.close();
         }
     }
 
-    std::vector<int> num_tx_per_tissue_loc,num_tx_per_tissue_loc_real,num_tx_per_tissue_loc_intronic,num_tx_per_tissue_loc_nonintronic,num_tx_per_tissue_loc_polymerase,num_tx_per_tissue_loc_left;
-    std::vector<float> sum_tx_per_tissue_loc,sum_tx_per_tissue_loc_real,sum_tx_per_tissue_loc_intronic,sum_tx_per_tissue_loc_nonintronic,sum_tx_per_tissue_loc_polymerase,sum_tx_per_tissue_loc_left;
+    std::vector<int> num_tx_per_tissue_loc,num_tx_per_tissue_loc_real,num_tx_per_tissue_loc_intronic,num_tx_per_tissue_loc_splicing,num_tx_per_tissue_loc_polymerase,num_tx_per_tissue_loc_left;
+    std::vector<float> sum_tx_per_tissue_loc,sum_tx_per_tissue_loc_real,sum_tx_per_tissue_loc_intronic,sum_tx_per_tissue_loc_splicing,sum_tx_per_tissue_loc_polymerase,sum_tx_per_tissue_loc_left;
     void save_tissue_tx_stats(std::string base_out_fname){
         if(num_tx_per_tissue_loc.size()!=num_tx_per_tissue_loc_real.size()) {
             std::cerr<<"tissue loc vectors not equal size"<<std::endl;
@@ -245,15 +245,15 @@ struct Stats{
             std::cerr<<"num_tx_per_tissue_loc_intronic: "<<num_tx_per_tissue_loc_intronic.size()<<std::endl;
             exit(-1);
         }
-        else if(num_tx_per_tissue_loc_intronic.size()!=num_tx_per_tissue_loc_nonintronic.size()) {
+        else if(num_tx_per_tissue_loc_intronic.size() != num_tx_per_tissue_loc_splicing.size()) {
             std::cerr<<"tissue loc vectors not equal size"<<std::endl;
             std::cerr<<"num_tx_per_tissue_loc_intronic: "<<num_tx_per_tissue_loc_intronic.size()<<std::endl;
-            std::cerr<<"num_tx_per_tissue_loc_nonintronic: "<<num_tx_per_tissue_loc_nonintronic.size()<<std::endl;
+            std::cerr << "num_tx_per_tissue_loc_splicing: " << num_tx_per_tissue_loc_splicing.size() << std::endl;
             exit(-1);
         }
-        else if(num_tx_per_tissue_loc_nonintronic.size()!=num_tx_per_tissue_loc_polymerase.size()) {
+        else if(num_tx_per_tissue_loc_splicing.size() != num_tx_per_tissue_loc_polymerase.size()) {
             std::cerr<<"tissue loc vectors not equal size"<<std::endl;
-            std::cerr<<"num_tx_per_tissue_loc_nonintronic: "<<num_tx_per_tissue_loc_nonintronic.size()<<std::endl;
+            std::cerr << "num_tx_per_tissue_loc_splicing: " << num_tx_per_tissue_loc_splicing.size() << std::endl;
             std::cerr<<"num_tx_per_tissue_loc_polymerase: "<<num_tx_per_tissue_loc_polymerase.size()<<std::endl;
             exit(-1);
         }
@@ -266,28 +266,28 @@ struct Stats{
         else{
             std::string num_tx_per_tissue_loc_fname = base_out_fname+".num_tx_per_tissue_loc";
             std::ofstream num_tx_per_tissue_loc_ss(num_tx_per_tissue_loc_fname.c_str());
-            num_tx_per_tissue_loc_ss<<"all,real,intronic,nonintronic,polymerase,left"<<std::endl;
+            num_tx_per_tissue_loc_ss<<"all,real,intronic,splicing,polymerase,left"<<std::endl;
 
             for(int i=0;i<this->num_tx_per_tissue_loc.size();i++){
-                num_tx_per_tissue_loc_ss<<num_tx_per_tissue_loc[i]<<","<<num_tx_per_tissue_loc_real[i]<<","<<num_tx_per_tissue_loc_intronic[i]<<","<<num_tx_per_tissue_loc_nonintronic[i]<<","<<num_tx_per_tissue_loc_polymerase[i]<<","<<num_tx_per_tissue_loc_left[i]<<std::endl;
+                num_tx_per_tissue_loc_ss << num_tx_per_tissue_loc[i] << "," << num_tx_per_tissue_loc_real[i] << "," << num_tx_per_tissue_loc_intronic[i] << "," << num_tx_per_tissue_loc_splicing[i] << "," << num_tx_per_tissue_loc_polymerase[i] << "," << num_tx_per_tissue_loc_left[i] << std::endl;
             }
 
             num_tx_per_tissue_loc_ss.close();
 
             std::string sum_tx_per_tissue_loc_fname = base_out_fname+".sum_tx_per_tissue_loc";
             std::ofstream sum_tx_per_tissue_loc_ss(sum_tx_per_tissue_loc_fname.c_str());
-            sum_tx_per_tissue_loc_ss<<"all,real,intronic,nonintronic,polymerase,left"<<std::endl;
+            sum_tx_per_tissue_loc_ss<<"all,real,intronic,splicing,polymerase,left"<<std::endl;
 
             for(int i=0;i<this->sum_tx_per_tissue_loc.size();i++){
-                sum_tx_per_tissue_loc_ss<<sum_tx_per_tissue_loc[i]<<","<<sum_tx_per_tissue_loc_real[i]<<","<<sum_tx_per_tissue_loc_intronic[i]<<","<<sum_tx_per_tissue_loc_nonintronic[i]<<","<<sum_tx_per_tissue_loc_polymerase[i]<<","<<sum_tx_per_tissue_loc_left[i]<<std::endl;
+                sum_tx_per_tissue_loc_ss << sum_tx_per_tissue_loc[i] << "," << sum_tx_per_tissue_loc_real[i] << "," << sum_tx_per_tissue_loc_intronic[i] << "," << sum_tx_per_tissue_loc_splicing[i] << "," << sum_tx_per_tissue_loc_polymerase[i] << "," << sum_tx_per_tissue_loc_left[i] << std::endl;
             }
 
             sum_tx_per_tissue_loc_ss.close();
         }
     }
 
-    std::vector<int> num_tx_per_sample_loc,num_tx_per_sample_loc_real,num_tx_per_sample_loc_intronic,num_tx_per_sample_loc_nonintronic,num_tx_per_sample_loc_polymerase,num_tx_per_sample_loc_left;
-    std::vector<float> sum_tx_per_sample_loc,sum_tx_per_sample_loc_real,sum_tx_per_sample_loc_intronic,sum_tx_per_sample_loc_nonintronic,sum_tx_per_sample_loc_polymerase,sum_tx_per_sample_loc_left;
+    std::vector<int> num_tx_per_sample_loc,num_tx_per_sample_loc_real,num_tx_per_sample_loc_intronic,num_tx_per_sample_loc_splicing,num_tx_per_sample_loc_polymerase,num_tx_per_sample_loc_left;
+    std::vector<float> sum_tx_per_sample_loc,sum_tx_per_sample_loc_real,sum_tx_per_sample_loc_intronic,sum_tx_per_sample_loc_splicing,sum_tx_per_sample_loc_polymerase,sum_tx_per_sample_loc_left;
     void save_sample_tx_stats(std::string base_out_fname){
         if(num_tx_per_sample_loc.size()!=num_tx_per_sample_loc_real.size()) {
             std::cerr<<"sample loc vectors not equal size"<<std::endl;
@@ -301,15 +301,15 @@ struct Stats{
             std::cerr<<"num_tx_per_sample_loc_intronic: "<<num_tx_per_sample_loc_intronic.size()<<std::endl;
             exit(-1);
         }
-        else if(num_tx_per_sample_loc_intronic.size()!=num_tx_per_sample_loc_nonintronic.size()) {
+        else if(num_tx_per_sample_loc_intronic.size() != num_tx_per_sample_loc_splicing.size()) {
             std::cerr<<"sample loc vectors not equal size"<<std::endl;
             std::cerr<<"num_tx_per_sample_loc_intronic: "<<num_tx_per_sample_loc_intronic.size()<<std::endl;
-            std::cerr<<"num_tx_per_sample_loc_nonintronic: "<<num_tx_per_sample_loc_nonintronic.size()<<std::endl;
+            std::cerr << "num_tx_per_sample_loc_splicing: " << num_tx_per_sample_loc_splicing.size() << std::endl;
             exit(-1);
         }
-        else if(num_tx_per_sample_loc_nonintronic.size()!=num_tx_per_sample_loc_polymerase.size()) {
+        else if(num_tx_per_sample_loc_splicing.size() != num_tx_per_sample_loc_polymerase.size()) {
             std::cerr<<"sample loc vectors not equal size"<<std::endl;
-            std::cerr<<"num_tx_per_sample_loc_nonintronic: "<<num_tx_per_sample_loc_nonintronic.size()<<std::endl;
+            std::cerr << "num_tx_per_sample_loc_splicing: " << num_tx_per_sample_loc_splicing.size() << std::endl;
             std::cerr<<"num_tx_per_sample_loc_polymerase: "<<num_tx_per_sample_loc_polymerase.size()<<std::endl;
             exit(-1);
         }
@@ -322,55 +322,154 @@ struct Stats{
         else{
             std::string num_tx_per_sample_loc_fname = base_out_fname+".num_tx_per_sample_loc";
             std::ofstream num_tx_per_sample_loc_ss(num_tx_per_sample_loc_fname.c_str());
-            num_tx_per_sample_loc_ss<<"all,real,intronic,nonintronic,polymerase,left"<<std::endl;
+            num_tx_per_sample_loc_ss<<"all,real,intronic,splicing,polymerase,left"<<std::endl;
 
             for(int i=0;i<this->num_tx_per_sample_loc.size();i++){
-                num_tx_per_sample_loc_ss<<num_tx_per_sample_loc[i]<<","<<num_tx_per_sample_loc_real[i]<<","<<num_tx_per_sample_loc_intronic[i]<<","<<num_tx_per_sample_loc_nonintronic[i]<<","<<num_tx_per_sample_loc_polymerase[i]<<","<<num_tx_per_sample_loc_left[i]<<std::endl;
+                num_tx_per_sample_loc_ss << num_tx_per_sample_loc[i] << "," << num_tx_per_sample_loc_real[i] << "," << num_tx_per_sample_loc_intronic[i] << "," << num_tx_per_sample_loc_splicing[i] << "," << num_tx_per_sample_loc_polymerase[i] << "," << num_tx_per_sample_loc_left[i] << std::endl;
             }
 
             num_tx_per_sample_loc_ss.close();
 
             std::string sum_tx_per_sample_loc_fname = base_out_fname+".sum_tx_per_sample_loc";
             std::ofstream sum_tx_per_sample_loc_ss(sum_tx_per_sample_loc_fname.c_str());
-            sum_tx_per_sample_loc_ss<<"all,real,intronic,nonintronic,polymerase,left"<<std::endl;
+            sum_tx_per_sample_loc_ss<<"all,real,intronic,splicing,polymerase,left"<<std::endl;
 
             for(int i=0;i<this->sum_tx_per_sample_loc.size();i++){
-                sum_tx_per_sample_loc_ss<<sum_tx_per_sample_loc[i]<<","<<sum_tx_per_sample_loc_real[i]<<","<<sum_tx_per_sample_loc_intronic[i]<<","<<sum_tx_per_sample_loc_nonintronic[i]<<","<<sum_tx_per_sample_loc_polymerase[i]<<","<<sum_tx_per_sample_loc_left[i]<<std::endl;
+                sum_tx_per_sample_loc_ss << sum_tx_per_sample_loc[i] << "," << sum_tx_per_sample_loc_real[i] << "," << sum_tx_per_sample_loc_intronic[i] << "," << sum_tx_per_sample_loc_splicing[i] << "," << sum_tx_per_sample_loc_polymerase[i] << "," << sum_tx_per_sample_loc_left[i] << std::endl;
             }
 
             sum_tx_per_sample_loc_ss.close();
         }
     }
 
-    std::vector<int> num_tx_per_tissue_loc2,num_tx_per_tissue_loc_real2,num_tx_per_tissue_loc_intronic2,num_tx_per_tissue_loc_nonintronic2,num_tx_per_tissue_loc_polymerase2,num_tx_per_tissue_loc_left2;
+    std::vector<int> num_tx_per_tissue_loc2,num_tx_per_tissue_loc_real2,num_tx_per_tissue_loc_intronic2,num_tx_per_tissue_loc_splicing2,num_tx_per_tissue_loc_polymerase2,num_tx_per_tissue_loc_left2;
     void save_tissue_tx_stats2(std::string base_out_fname){
         std::string num_tx_per_tissue_loc_fname = base_out_fname+".num_tx_per_tissue_loc2";
         std::ofstream num_tx_per_tissue_loc_ss(num_tx_per_tissue_loc_fname.c_str());
-        num_tx_per_tissue_loc_ss<<"total,real,intronic,nonintronic,polymerase,left"<<std::endl;
+        num_tx_per_tissue_loc_ss<<"total,real,intronic,splicing,polymerase,left"<<std::endl;
 
         for(int i=0;i<this->num_tx_per_tissue_loc2.size();i++){
-            num_tx_per_tissue_loc_ss<<num_tx_per_tissue_loc2[i]<<","<<num_tx_per_tissue_loc_real2[i]<<","<<num_tx_per_tissue_loc_intronic2[i]<<","<<num_tx_per_tissue_loc_nonintronic2[i]<<","<<num_tx_per_tissue_loc_polymerase2[i]<<","<<num_tx_per_tissue_loc_left2[i]<<std::endl;
+            num_tx_per_tissue_loc_ss<<num_tx_per_tissue_loc2[i]<<","<<num_tx_per_tissue_loc_real2[i]<<","<<num_tx_per_tissue_loc_intronic2[i]<<","<<num_tx_per_tissue_loc_splicing2[i]<<","<<num_tx_per_tissue_loc_polymerase2[i]<<","<<num_tx_per_tissue_loc_left2[i]<<std::endl;
         }
 
         num_tx_per_tissue_loc_ss.close();
     }
 
-    std::vector<int> num_tx_per_sample_loc2,num_tx_per_sample_loc_real2,num_tx_per_sample_loc_intronic2,num_tx_per_sample_loc_nonintronic2,num_tx_per_sample_loc_polymerase2,num_tx_per_sample_loc_left2;
+    std::vector<int> num_tx_per_sample_loc2,num_tx_per_sample_loc_real2,num_tx_per_sample_loc_intronic2,num_tx_per_sample_loc_splicing2,num_tx_per_sample_loc_polymerase2,num_tx_per_sample_loc_left2;
     void save_sample_tx_stats2(std::string base_out_fname){
         std::string num_tx_per_sample_loc_fname = base_out_fname+".num_tx_per_sample_loc2";
         std::ofstream num_tx_per_sample_loc_ss(num_tx_per_sample_loc_fname.c_str());
-        num_tx_per_sample_loc_ss<<"total,real,intronic,nonintronic,polymerase,left"<<std::endl;
+        num_tx_per_sample_loc_ss<<"total,real,intronic,splicing,polymerase,left"<<std::endl;
 
         for(int i=0;i<this->num_tx_per_sample_loc2.size();i++){
-            num_tx_per_sample_loc_ss<<num_tx_per_sample_loc2[i]<<","<<num_tx_per_sample_loc_real2[i]<<","<<num_tx_per_sample_loc_intronic2[i]<<","<<num_tx_per_sample_loc_nonintronic2[i]<<","<<num_tx_per_sample_loc_polymerase2[i]<<","<<num_tx_per_sample_loc_left2[i]<<std::endl;
+            num_tx_per_sample_loc_ss<<num_tx_per_sample_loc2[i]<<","<<num_tx_per_sample_loc_real2[i]<<","<<num_tx_per_sample_loc_intronic2[i]<<","<<num_tx_per_sample_loc_splicing2[i]<<","<<num_tx_per_sample_loc_polymerase2[i]<<","<<num_tx_per_sample_loc_left2[i]<<std::endl;
         }
 
         num_tx_per_sample_loc_ss.close();
     }
 
-    std::vector<float> cov_sample_real,cov_sample_intronic,cov_sample_nonintronic,cov_sample_polymerase,cov_sample_left;
-    std::vector<float> fpkm_sample_real,fpkm_sample_intronic,fpkm_sample_nonintronic,fpkm_sample_polymerase,fpkm_sample_left;
-    std::vector<float> tpm_sample_real,tpm_sample_intronic,tpm_sample_nonintronic,tpm_sample_polymerase,tpm_sample_left;
+    // for real loci only - used to compute fraction of real to splicing transcripts per locus
+    std::vector<std::tuple<int,float,int,float,int,float>> cov_fracs; // number of real transcripts, sum of tpms of real, number of splicing transcripts, sum of tpms of splicing, num of intronic transcirpts, sum of intronic
+    void save_cov_fracs(std::string base_out_fname){
+        std::string frac_fname = base_out_fname+".cov_fracs";
+        std::ofstream frac_ss(frac_fname.c_str());
+        frac_ss << "nt_real,sum_real,nt_nonint,sum_nonint,nt_int,sum_int" << std::endl;
+        for(auto& t : cov_fracs){
+            frac_ss << std::get<0>(t) << "," << std::get<1>(t) << "," << std::get<2>(t) << "," << std::get<3>(t) << "," << std::get<4>(t) << "," << std::get<5>(t) << std::endl;
+        }
+        frac_ss.close();
+    }
+
+    std::vector<std::tuple<std::vector<float>,std::vector<float>,std::vector<float>>> covs_joined;
+    void save_cov_joined(std::string base_out_fname){
+        std::string joined_fname = base_out_fname+".covs_joined";
+        std::ofstream joined_ss(joined_fname.c_str());
+        joined_ss << "nt_real,nt_nonint,nt_int,real,nonint,int" << std::endl;
+        for(auto& t : covs_joined){
+            joined_ss << std::get<0>(t).size() << "," << std::get<1>(t).size() << "," << std::get<2>(t).size() << ",";
+            if(std::get<0>(t).size() == 0){
+                joined_ss << "0;";
+            }
+            for(auto& s : std::get<0>(t)){
+                joined_ss << s <<";";
+            }
+            joined_ss.seekp(-1, std::ios_base::end);
+            joined_ss << ",";
+            if(std::get<1>(t).size() == 0){
+                joined_ss << "0;";
+            }
+            for(auto& s : std::get<1>(t)){
+                joined_ss << s <<";";
+            }
+            joined_ss.seekp(-1, std::ios_base::end);
+            joined_ss << ",";
+            if(std::get<2>(t).size() == 0){
+                joined_ss << "0;";
+            }
+            for(auto& s : std::get<2>(t)){
+                joined_ss << s <<";";
+            }
+            joined_ss.seekp(-1, std::ios_base::end);
+            joined_ss << std::endl;
+        }
+        joined_ss.close();
+    }
+
+    std::vector<std::tuple<int,float,int,float,int,float>> tpm_fracs; // number of real transcripts, sum of tpms of real, number of splicing transcripts, sum of tpms of splicing, num intronic, sum intronic
+    void save_tpm_fracs(std::string base_out_fname){
+        std::string frac_fname = base_out_fname+".tpm_fracs";
+        std::ofstream frac_ss(frac_fname.c_str());
+        frac_ss << "nt_real,sum_real,nt_nonint,sum_nonint,nt_int,sum_int" << std::endl;
+        for(auto& t : tpm_fracs){
+            frac_ss << std::get<0>(t) << "," << std::get<1>(t) << "," << std::get<2>(t) << "," << std::get<3>(t) << "," << std::get<4>(t) << "," << std::get<5>(t) << std::endl;
+        }
+        frac_ss.close();
+    }
+
+    std::vector<std::tuple<std::vector<float>,std::vector<float>,std::vector<float>>> tpms_joined;
+    void save_tpm_joined(std::string base_out_fname){
+        std::string joined_fname = base_out_fname+".tpms_joined";
+        std::ofstream joined_ss(joined_fname.c_str());
+        joined_ss << "nt_real,nt_nonint,nt_int,real,nonint,int" << std::endl;
+        for(auto& t : tpms_joined){
+            joined_ss << std::get<0>(t).size() << "," << std::get<1>(t).size() << "," << std::get<2>(t).size() << ",";
+            if(std::get<0>(t).size() == 0){
+                joined_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<0>(t)){
+                    joined_ss << s <<";";
+                }
+            }
+            joined_ss.seekp(-1, std::ios_base::end);
+            joined_ss << ",";
+            if(std::get<1>(t).size() == 0){
+                joined_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<1>(t)){
+                    joined_ss << s <<";";
+                }
+            }
+            joined_ss.seekp(-1, std::ios_base::end);
+            joined_ss << ",";
+            if(std::get<2>(t).size() == 0){
+                joined_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<2>(t)){
+                    joined_ss << s <<";";
+                }
+            }
+            joined_ss.seekp(-1, std::ios_base::end);
+            joined_ss << std::endl;
+        }
+        joined_ss.close();
+    }
+
+    std::vector<float> cov_sample_real,cov_sample_intronic,cov_sample_splicing,cov_sample_polymerase,cov_sample_left;
+    std::vector<float> fpkm_sample_real,fpkm_sample_intronic,fpkm_sample_splicing,fpkm_sample_polymerase,fpkm_sample_left;
+    std::vector<float> tpm_sample_real,tpm_sample_intronic,tpm_sample_splicing,tpm_sample_polymerase,tpm_sample_left;
     void save_sample_cov(std::string base_out_fname){
         std::string cov_sample_real_fname = base_out_fname+".cov_sample_real";
         std::ofstream cov_sample_real_ss(cov_sample_real_fname.c_str());
@@ -388,13 +487,13 @@ struct Stats{
         }
         cov_sample_intronic_ss.close();
 
-        std::string cov_sample_nonintronic_fname = base_out_fname+".cov_sample_nonintronic";
-        std::ofstream cov_sample_nonintronic_ss(cov_sample_nonintronic_fname.c_str());
-        cov_sample_nonintronic_ss<<"cov,fpkm,tpm"<<std::endl;
-        for(int i=0;i<this->cov_sample_nonintronic.size();i++){
-            cov_sample_nonintronic_ss<<cov_sample_nonintronic[i]<<","<<fpkm_sample_nonintronic[i]<<","<<tpm_sample_nonintronic[i]<<std::endl;
+        std::string cov_sample_splicing_fname = base_out_fname+".cov_sample_splicing";
+        std::ofstream cov_sample_splicing_ss(cov_sample_splicing_fname.c_str());
+        cov_sample_splicing_ss<<"cov,fpkm,tpm"<<std::endl;
+        for(int i=0;i<this->cov_sample_splicing.size();i++){
+            cov_sample_splicing_ss<<cov_sample_splicing[i]<<","<<fpkm_sample_splicing[i]<<","<<tpm_sample_splicing[i]<<std::endl;
         }
-        cov_sample_nonintronic_ss.close();
+        cov_sample_splicing_ss.close();
 
         std::string cov_sample_polymerase_fname = base_out_fname+".cov_sample_polymerase";
         std::ofstream cov_sample_polymerase_ss(cov_sample_polymerase_fname.c_str());
@@ -403,6 +502,214 @@ struct Stats{
             cov_sample_polymerase_ss<<cov_sample_polymerase[i]<<","<<fpkm_sample_polymerase[i]<<","<<tpm_sample_polymerase[i]<<std::endl;
         }
         cov_sample_polymerase_ss.close();
+    }
+
+    std::vector<int> num_real_locs_sample,num_noise_locs_sample;
+    void save_sample_loc(std::string base_out_fname){
+        std::string num_real_locs_fname = base_out_fname+".num_real_locs_sample";
+        std::ofstream num_real_locs_ss(num_real_locs_fname);
+        for(auto& num : num_real_locs_sample){
+            num_real_locs_ss << num << std::endl;
+        }
+        num_real_locs_ss.close();
+
+        std::string num_noise_locs_fname = base_out_fname+".num_noise_locs_sample";
+        std::ofstream num_noise_locs_ss(num_noise_locs_fname);
+        for(auto& num : num_noise_locs_sample){
+            num_noise_locs_ss << num << std::endl;
+        }
+        num_noise_locs_ss.close();
+    }
+
+    // we need to have distribution of loci per tissue and per sample as well to choose from
+    std::vector<int> num_real_locs_tissue,num_noise_locs_tissue;
+    void save_tissue_loc(std::string base_out_fname){
+        std::string num_real_locs_fname = base_out_fname+".num_real_locs_tissue";
+        std::ofstream num_real_locs_ss(num_real_locs_fname);
+        for(auto& num : num_real_locs_tissue){
+            num_real_locs_ss << num << std::endl;
+        }
+        num_real_locs_ss.close();
+
+        std::string num_noise_locs_fname = base_out_fname+".num_noise_locs_tissue";
+        std::ofstream num_noise_locs_ss(num_noise_locs_fname);
+        for(auto& num : num_noise_locs_tissue){
+            num_noise_locs_ss << num << std::endl;
+        }
+        num_noise_locs_ss.close();
+    }
+
+    std::map<std::string,std::tuple<int,int,int,int>> sample_txs;
+    void save_sample_txs(std::string base_out_fname){
+        std::string num_tx_per_sample_fname = base_out_fname+".num_tx_per_sample";
+        std::ofstream num_tx_per_sample_ss(num_tx_per_sample_fname.c_str());
+        num_tx_per_sample_ss<<"sample,real,intronic,splicing,polymerase"<<std::endl;
+
+        for(auto& v : sample_txs){
+            num_tx_per_sample_ss<<v.first<<","<<std::get<0>(v.second)<<","<<std::get<1>(v.second)<<","<<std::get<2>(v.second)<<","<<std::get<3>(v.second)<<std::endl;
+        }
+
+        num_tx_per_sample_ss.close();
+    }
+
+    std::vector<std::tuple<int,int,int,int>> num_tx_per_tissue_loc3;
+    void save_tissue_tx_stats3(std::string base_out_fname){
+        std::string num_tx_per_tissue_loc_fname = base_out_fname+".num_tx_per_tissue_loc3";
+        std::ofstream num_tx_per_tissue_loc_ss(num_tx_per_tissue_loc_fname.c_str());
+        num_tx_per_tissue_loc_ss<<"real,intronic,splicing,polymerase"<<std::endl;
+
+        for(auto& v : num_tx_per_tissue_loc3){
+            num_tx_per_tissue_loc_ss<<std::get<0>(v)<<","<<std::get<1>(v)<<","<<std::get<2>(v)<<","<<std::get<3>(v)<<std::endl;
+        }
+
+        num_tx_per_tissue_loc_ss.close();
+    }
+
+    std::vector<std::tuple<int,int,int,int>> num_tx_per_sample_loc3;
+    void save_sample_tx_stats3(std::string base_out_fname){
+        std::string num_tx_per_sample_loc_fname = base_out_fname+".num_tx_per_sample_loc3";
+        std::ofstream num_tx_per_sample_loc_ss(num_tx_per_sample_loc_fname.c_str());
+        num_tx_per_sample_loc_ss<<"real,intronic,splicing,polymerase"<<std::endl;
+
+        for(auto& v : num_tx_per_sample_loc3){
+            num_tx_per_sample_loc_ss<<std::get<0>(v)<<","<<std::get<1>(v)<<","<<std::get<2>(v)<<","<<std::get<3>(v)<<std::endl;
+        }
+
+        num_tx_per_sample_loc_ss.close();
+    }
+
+    std::map<std::string,std::tuple<int,int,int,int>> num_tx_per_sample_loc4;
+    void save_sample_tx_stats4(std::string base_out_fname){
+        std::string num_tx_per_sample_loc_fname = base_out_fname+".num_tx_per_sample_loc4";
+        std::ofstream num_tx_per_sample_loc_ss(num_tx_per_sample_loc_fname.c_str());
+        num_tx_per_sample_loc_ss<<"real,intronic,splicing,polymerase"<<std::endl;
+
+        for(auto& v : num_tx_per_sample_loc4){
+            num_tx_per_sample_loc_ss<<std::get<0>(v.second)<<","<<std::get<1>(v.second)<<","<<std::get<2>(v.second)<<","<<std::get<3>(v.second)<<std::endl;
+        }
+
+        num_tx_per_sample_loc_ss.close();
+    }
+
+    std::map<std::string,std::tuple<int,int,int,int>> num_tx_per_tissue_loc5;
+    void save_tissue_tx_stats5(std::string base_out_fname){
+        std::string num_tx_per_tissue_loc_fname = base_out_fname+".num_tx_per_tissue_loc5";
+        std::ofstream num_tx_per_tissue_loc_ss(num_tx_per_tissue_loc_fname.c_str());
+        num_tx_per_tissue_loc_ss<<"real,intronic,splicing,polymerase"<<std::endl;
+        for(auto& v : num_tx_per_tissue_loc5){
+            num_tx_per_tissue_loc_ss<<v.first<<","<<std::get<0>(v.second)<<","<<std::get<1>(v.second)<<","<<std::get<2>(v.second)<<","<<std::get<3>(v.second)<<std::endl;
+        }
+        num_tx_per_tissue_loc_ss.close();
+    }
+
+    std::vector<std::vector<std::pair<float,float>>> gauss_sample_tpm_per_tissue_loc;
+    void save_sample_tpm_gauss(std::string base_out_fname){
+        std::string gauss_sample_tpm_per_tissue_loc_fname = base_out_fname+".tpm_sample_gauss";
+        std::ofstream gauss_sample_tpm_per_tissue_loc_ss(gauss_sample_tpm_per_tissue_loc_fname.c_str());
+        gauss_sample_tpm_per_tissue_loc_ss<<"real_mean,real_sd,intronic_mean,intronic_sd,splicing_mean,splicing_sd,polymerase_mean,polymerase_sd";
+        for(int i=0;i<gauss_sample_tpm_per_tissue_loc.size();i++){
+            if(i%4==0){ // seen real,splice,int and pol and can output CR
+                gauss_sample_tpm_per_tissue_loc_ss<<std::endl;
+            }
+            else{
+                gauss_sample_tpm_per_tissue_loc_ss<<",";
+            }
+            for(auto& t : gauss_sample_tpm_per_tissue_loc[i]){
+                gauss_sample_tpm_per_tissue_loc_ss<<t.first<<";";
+            }
+            gauss_sample_tpm_per_tissue_loc_ss.seekp(-1, std::ios_base::end);
+            gauss_sample_tpm_per_tissue_loc_ss << ",";
+            for(auto& t : gauss_sample_tpm_per_tissue_loc[i]){
+                gauss_sample_tpm_per_tissue_loc_ss<<t.second<<";";
+            }
+            gauss_sample_tpm_per_tissue_loc_ss.seekp(-1, std::ios_base::end);
+        }
+        gauss_sample_tpm_per_tissue_loc_ss<<std::endl;
+
+        gauss_sample_tpm_per_tissue_loc_ss.close();
+    }
+
+    std::vector<std::pair<float,float>> gauss_sample_tx_per_tissue_loc;
+    void save_sample_tx_gauss(std::string base_out_fname){
+        std::string gauss_sample_tx_per_tissue_loc_fname = base_out_fname+".num_tx_sample_gauss";
+        std::ofstream gauss_sample_tx_per_tissue_loc_ss(gauss_sample_tx_per_tissue_loc_fname.c_str());
+        gauss_sample_tx_per_tissue_loc_ss<<"real_mean,real_sd,intronic_mean,intronic_sd,splicing_mean,splicing_sd,polymerase_mean,polymerase_sd";
+        for(int i=0;i<gauss_sample_tx_per_tissue_loc.size();i++){
+            if(i%4==0){ // seen real,splice,int and pol and can output CR
+                gauss_sample_tx_per_tissue_loc_ss<<std::endl;
+            }
+            else{
+                gauss_sample_tx_per_tissue_loc_ss<<",";
+            }
+            gauss_sample_tx_per_tissue_loc_ss<<gauss_sample_tx_per_tissue_loc[i].first<<","<<gauss_sample_tx_per_tissue_loc[i].second;
+        }
+        gauss_sample_tx_per_tissue_loc_ss<<std::endl;
+
+        gauss_sample_tx_per_tissue_loc_ss.close();
+    }
+
+    // The following container structure is:
+    //  key - sample_loc_id
+    //  value tuple:
+    //     <0> - int - number of real transcripts
+    //     <1> - int - number of splicing transcripts
+    //     <2> - int - number of intronic transcripts
+    //     <3> - int - number of intergenic transcripts
+    //     <4> - float - tpms observed in real transcripts
+    //     <5> - float - tpms observed in splicing transcripts
+    //     <6> - float - tpms observed in intronic transcripts
+    //     <7> - float - tpms observed in polymerase transcripts
+    std::map<std::string,std::tuple<std::vector<float>,std::vector<float>,std::vector<float>,std::vector<float>>> num_tx_per_sample_loc5;
+    void save_sample_tx_stats5(std::string base_out_fname){
+        std::string num_tx_per_sample_loc_fname = base_out_fname+".num_tx_per_sample_loc5";
+        std::ofstream num_tx_per_sample_loc_ss(num_tx_per_sample_loc_fname.c_str());
+        num_tx_per_sample_loc_ss<<"real,intronic,splicing,polymerase,tpms_real,tpms_intronic,tpms_splicing,tpms_polymerase"<<std::endl;
+
+        for(auto& v : num_tx_per_sample_loc5){
+            num_tx_per_sample_loc_ss<<std::get<0>(v.second).size()<<","<<std::get<1>(v.second).size()<<","<<std::get<2>(v.second).size()<<","<<std::get<3>(v.second).size()<<",";
+            if(std::get<0>(v.second).size() == 0){
+                num_tx_per_sample_loc_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<0>(v.second)){
+                    num_tx_per_sample_loc_ss << s <<";";
+                }
+            }
+            num_tx_per_sample_loc_ss.seekp(-1, std::ios_base::end);
+            num_tx_per_sample_loc_ss << ",";
+            if(std::get<1>(v.second).size() == 0){
+                num_tx_per_sample_loc_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<1>(v.second)){
+                    num_tx_per_sample_loc_ss << s <<";";
+                }
+            }
+            num_tx_per_sample_loc_ss.seekp(-1, std::ios_base::end);
+            num_tx_per_sample_loc_ss << ",";
+            if(std::get<2>(v.second).size() == 0){
+                num_tx_per_sample_loc_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<2>(v.second)){
+                    num_tx_per_sample_loc_ss << s <<";";
+                }
+            }
+            num_tx_per_sample_loc_ss.seekp(-1, std::ios_base::end);
+            num_tx_per_sample_loc_ss << ",";
+            if(std::get<3>(v.second).size() == 0){
+                num_tx_per_sample_loc_ss << "0;";
+            }
+            else{
+                for(auto& s : std::get<3>(v.second)){
+                    num_tx_per_sample_loc_ss << s <<";";
+                }
+            }
+            num_tx_per_sample_loc_ss.seekp(-1, std::ios_base::end);
+            num_tx_per_sample_loc_ss << std::endl;
+        }
+
+        num_tx_per_sample_loc_ss.close();
     }
 
     int num_avg_real_locs_per_tissue=0,num_avg_noise_locs_per_tissue=0,num_avg_undef_locs_per_tissue=0;
@@ -415,14 +722,41 @@ struct Stats{
         loc_ss.close();
     }
 
+    std::map<std::string,std::tuple<int,int,int,int>> num_tx_per_tissue;
+    void save_num_tx_tissue(std::string base_out_fname){
+        std::string num_tx_per_tissue_fname = base_out_fname+".num_tx_per_tissue";
+        std::ofstream num_tx_per_tissue_ss(num_tx_per_tissue_fname.c_str());
+        num_tx_per_tissue_ss<<"real,splicing,intronic,polymerase"<<std::endl;
+        for(auto& v : num_tx_per_tissue){
+            num_tx_per_tissue_ss<<std::get<0>(v.second)<<","<<std::get<1>(v.second)<<","<<std::get<2>(v.second)<<","<<std::get<3>(v.second)<<std::endl;
+        }
+        num_tx_per_tissue_ss.close();
+    }
+
     void save_stats(std::string base_out_fname){
-        save_all_tx_stats(base_out_fname);
-        save_tissue_tx_stats(base_out_fname);
-        save_sample_tx_stats(base_out_fname);
-        save_sample_cov(base_out_fname);
-        save_loc_stats(base_out_fname);
-        save_tissue_tx_stats2(base_out_fname);
-        save_sample_tx_stats2(base_out_fname);
+//        save_all_tx_stats(base_out_fname);
+//        save_tissue_tx_stats(base_out_fname);
+//        save_sample_tx_stats(base_out_fname);
+//        save_sample_cov(base_out_fname);
+//        save_loc_stats(base_out_fname);
+//        save_tissue_tx_stats2(base_out_fname);
+//        save_sample_tx_stats2(base_out_fname);
+//        save_cov_fracs(base_out_fname);
+//        save_cov_joined(base_out_fname);
+//        save_tpm_fracs(base_out_fname);
+//        save_tpm_joined(base_out_fname);
+//        save_tissue_loc(base_out_fname);
+//        save_sample_loc(base_out_fname);
+//        save_tissue_tx_stats3(base_out_fname);
+//        save_sample_tx_stats3(base_out_fname);
+//        save_sample_txs(base_out_fname);
+//        save_sample_tx_stats4(base_out_fname);
+//        save_sample_tx_stats5(base_out_fname);
+//        save_tissue_tx_stats5(base_out_fname);
+//        save_num_tx_tissue(base_out_fname);
+//        save_sample_tx_gauss(base_out_fname);
+        save_sample_tpm_gauss(base_out_fname);
+        std::cout<<"done saving stats"<<std::endl;
     }
 };
 
@@ -467,7 +801,7 @@ public:
         load_type(this->true_gff_fname,TYPE::REAL_TX);
         // load transcript IDs for ALL that are true
         std::cout<<"<<<loading non-intronic/splicing noise transcript ids"<<std::endl;
-        load_type(this->splicing_gff_fname,TYPE::NONINTRONIC_TX);
+        load_type(this->splicing_gff_fname,TYPE::SPLICING_TX);
         // load transcript IDs for ALL that are true
         std::cout<<"<<<loading intronic noise transcript ids"<<std::endl;
         load_type(this->intronic_gff_fname,TYPE::INTRONIC_TX);
@@ -476,217 +810,434 @@ public:
         load_type(this->polymerase_gff_fname,TYPE::POLYMERASE_TX);
     }
 
-    void get_stats(Stats& stats){
-        std::cout<<"<<<computing stats"<<std::endl;
-        // use TYPE tags to report stats per each type of transcript
-        for(auto& v : this->loci){
-            int num_txs_all=0,num_txs_real=0,num_txs_intronic=0,num_txs_nonintronic=0,num_txs_polymerase=0,num_txs_left=0;
-            float sum_txs_all=0,sum_txs_real=0,sum_txs_intronic=0,sum_txs_nonintronic=0,sum_txs_polymerase=0,sum_txs_left=0;
-            for(auto& tit : v.second.first){
-                num_txs_all += tit.first->second.get_num_sample_txs();
-                switch(tit.first->second.type){
-                    case TYPE::REAL_TX:
-                        num_txs_real += tit.first->second.get_num_sample_txs();
-                        sum_txs_real += tit.first->second.get_sum_sample_tpms();
-                        break;
-                    case TYPE::INTRONIC_TX:
-                        num_txs_intronic += tit.first->second.get_num_sample_txs();
-                        sum_txs_intronic += tit.first->second.get_sum_sample_tpms();
-                        break;
-                    case TYPE::NONINTRONIC_TX:
-                        num_txs_nonintronic += tit.first->second.get_num_sample_txs();
-                        sum_txs_nonintronic += tit.first->second.get_sum_sample_tpms();
-                        break;
-                    case TYPE::POLYMERASE_TX:
-                        num_txs_polymerase += tit.first->second.get_num_sample_txs();
-                        sum_txs_polymerase += tit.first->second.get_sum_sample_tpms();
-                        break;
-                    default:
-                        num_txs_left += tit.first->second.get_num_sample_txs();
-                        sum_txs_left += tit.first->second.get_sum_sample_tpms();
-                        break;
-                }
-            }
-            stats.num_tx_per_all_loc_real.push_back(num_txs_real);
-            stats.num_tx_per_all_loc_intronic.push_back(num_txs_intronic);
-            stats.num_tx_per_all_loc_nonintronic.push_back(num_txs_nonintronic);
-            stats.num_tx_per_all_loc_polymerase.push_back(num_txs_polymerase);
-            stats.num_tx_per_all_loc_left.push_back(num_txs_left);
-            stats.num_tx_per_all_loc.push_back(num_txs_all);
-
-            stats.sum_tx_per_all_loc_real.push_back(sum_txs_real);
-            stats.sum_tx_per_all_loc_intronic.push_back(sum_txs_intronic);
-            stats.sum_tx_per_all_loc_nonintronic.push_back(sum_txs_nonintronic);
-            stats.sum_tx_per_all_loc_polymerase.push_back(sum_txs_polymerase);
-            stats.sum_tx_per_all_loc_left.push_back(sum_txs_left);
-            stats.sum_tx_per_all_loc.push_back(sum_txs_all);
-        }
-
-        // Now do the same on a tissue level
-        for(auto& v : this->loci_tissue){
-            int num_txs_all=0,num_txs_real=0,num_txs_intronic=0,num_txs_nonintronic=0,num_txs_polymerase=0,num_txs_left=0;
-            float sum_txs_all=0,sum_txs_real=0,sum_txs_intronic=0,sum_txs_nonintronic=0,sum_txs_polymerase=0,sum_txs_left=0;
-            for(auto& sit : v.second){
-                num_txs_all += sit.first->second.get_num_txs();
-                switch(sit.first->second.type){
-                    case TYPE::REAL_TX:
-                        num_txs_real += sit.first->second.get_num_txs();
-                        sum_txs_real += sit.first->second.get_sum_tpms();
-                        break;
-                    case TYPE::INTRONIC_TX:
-                        num_txs_intronic += sit.first->second.get_num_txs();
-                        sum_txs_intronic += sit.first->second.get_sum_tpms();
-                        break;
-                    case TYPE::NONINTRONIC_TX:
-                        num_txs_nonintronic += sit.first->second.get_num_txs();
-                        sum_txs_nonintronic += sit.first->second.get_sum_tpms();
-                        break;
-                    case TYPE::POLYMERASE_TX:
-                        num_txs_polymerase += sit.first->second.get_num_txs();
-                        sum_txs_polymerase += sit.first->second.get_sum_tpms();
-                        break;
-                    default:
-                        num_txs_left += sit.first->second.get_num_txs();
-                        sum_txs_left += sit.first->second.get_sum_tpms();
-                        break;
-                }
-            }
-            stats.num_tx_per_tissue_loc_real.push_back(num_txs_real);
-            stats.num_tx_per_tissue_loc_intronic.push_back(num_txs_intronic);
-            stats.num_tx_per_tissue_loc_nonintronic.push_back(num_txs_nonintronic);
-            stats.num_tx_per_tissue_loc_polymerase.push_back(num_txs_polymerase);
-            stats.num_tx_per_tissue_loc_left.push_back(num_txs_left);
-            stats.num_tx_per_tissue_loc.push_back(num_txs_all);
-
-            stats.sum_tx_per_tissue_loc_real.push_back(sum_txs_real);
-            stats.sum_tx_per_tissue_loc_intronic.push_back(sum_txs_intronic);
-            stats.sum_tx_per_tissue_loc_nonintronic.push_back(sum_txs_nonintronic);
-            stats.sum_tx_per_tissue_loc_polymerase.push_back(sum_txs_polymerase);
-            stats.sum_tx_per_tissue_loc_left.push_back(sum_txs_left);
-            stats.sum_tx_per_tissue_loc.push_back(sum_txs_all);
-        }
-
-        // Now do the same on a sample level
-        for(auto& v : this->loci_sample){
-            int num_txs_all=0,num_txs_real=0,num_txs_intronic=0,num_txs_nonintronic=0,num_txs_polymerase=0,num_txs_left=0;
-            float sum_txs_all=0,sum_txs_real=0,sum_txs_intronic=0,sum_txs_nonintronic=0,sum_txs_polymerase=0,sum_txs_left=0;
-            for(auto& sit : v.second){
-                num_txs_all += 1;
-                switch(sit.first->second.type){
-                    case TYPE::REAL_TX:
-                        num_txs_real += 1;
-                        sum_txs_real += sit.first->second.tpm;
-                        break;
-                    case TYPE::INTRONIC_TX:
-                        num_txs_intronic += 1;
-                        sum_txs_intronic += sit.first->second.tpm;
-                        break;
-                    case TYPE::NONINTRONIC_TX:
-                        num_txs_nonintronic += 1;
-                        sum_txs_nonintronic += sit.first->second.tpm;
-                        break;
-                    case TYPE::POLYMERASE_TX:
-                        num_txs_polymerase += 1;
-                        sum_txs_polymerase += sit.first->second.tpm;
-                        break;
-                    default:
-                        num_txs_left += 1;
-                        sum_txs_left += sit.first->second.tpm;
-                        break;
-                }
-            }
-            stats.num_tx_per_sample_loc_real.push_back(num_txs_real);
-            stats.num_tx_per_sample_loc_intronic.push_back(num_txs_intronic);
-            stats.num_tx_per_sample_loc_nonintronic.push_back(num_txs_nonintronic);
-            stats.num_tx_per_sample_loc_polymerase.push_back(num_txs_polymerase);
-            stats.num_tx_per_sample_loc_left.push_back(num_txs_left);
-            stats.num_tx_per_sample_loc.push_back(num_txs_all);
-
-            stats.sum_tx_per_sample_loc_real.push_back(sum_txs_real);
-            stats.sum_tx_per_sample_loc_intronic.push_back(sum_txs_intronic);
-            stats.sum_tx_per_sample_loc_nonintronic.push_back(sum_txs_nonintronic);
-            stats.sum_tx_per_sample_loc_polymerase.push_back(sum_txs_polymerase);
-            stats.sum_tx_per_sample_loc_left.push_back(sum_txs_left);
-            stats.sum_tx_per_sample_loc.push_back(sum_txs_all);
-        }
-
-        // now to figure out how to report the average number of transcripts which a tissue contributes to an ALL locus
-        for(auto& lit : this->loci){
-            int num_txs_total=lit.second.first.size();
-            std::map<std::string,int> num_txs_real,num_txs_intronic,num_txs_nonintronic,num_txs_polymerase,num_txs_left;
-            std::pair<std::map<std::string,int>::iterator,bool> nit;
-            for(auto& tit : lit.second.first){
-                // each tissue should only appear once in her - make sure that is so
-                for(auto& ts : tit.first->second.tissues){
-                    switch(tit.first->second.type){
-                        case TYPE::REAL_TX:
-                            nit = num_txs_real.insert(std::make_pair(ts,0));
-                            nit.first->second++;
-                            break;
-                        case TYPE::INTRONIC_TX:
-                            nit = num_txs_intronic.insert(std::make_pair(ts,0));
-                            nit.first->second++;
-                            break;
-                        case TYPE::NONINTRONIC_TX:
-                            nit = num_txs_nonintronic.insert(std::make_pair(ts,0));
-                            nit.first->second++;
-                            break;
-                        case TYPE::POLYMERASE_TX:
-                            nit = num_txs_polymerase.insert(std::make_pair(ts,0));
-                            nit.first->second++;
-                            break;
-                        default:
-                            nit = num_txs_left.insert(std::make_pair(ts,0));
-                            nit.first->second++;
-                            break;
+    void get_num_tx_per_sample_locus5(Stats& stats){
+        std::cout<<"computing the number of transcripts per locus per sample5"<<std::endl;
+        std::pair<std::map<std::string,std::tuple<std::vector<float>,std::vector<float>,std::vector<float>,std::vector<float>>>::iterator,bool> stloc5_it;
+        for(auto &atx : this->mattm){ // iterate over ALL transcripts
+            int tx_type = atx.second.type;
+            std::string tx_locus = atx.second.locus;
+            for(auto& ttx : atx.second.txs){
+                for(auto& stx : ttx.first->second.txs){
+                    stloc5_it = stats.num_tx_per_sample_loc5.insert(std::make_pair(stx.first->second.sample+tx_locus,std::make_tuple(std::vector<float>{},std::vector<float>{},std::vector<float>{},std::vector<float>{})));
+                    if(tx_type == TYPE::REAL_TX){
+                        std::get<0>(stloc5_it.first->second).push_back(stx.first->second.tpm);
+                    }
+                    else if(tx_type == TYPE::SPLICING_TX){
+                        std::get<1>(stloc5_it.first->second).push_back(stx.first->second.tpm);
+                    }
+                    else if(tx_type == TYPE::INTRONIC_TX){
+                        std::get<2>(stloc5_it.first->second).push_back(stx.first->second.tpm);
+                    }
+                    else if(tx_type == TYPE::POLYMERASE_TX){
+                        std::get<3>(stloc5_it.first->second).push_back(stx.first->second.tpm);
+                    }
+                    else{
+                        continue;
                     }
                 }
             }
-            // compute averages across tissues now
-            int sum_real=0,sum_int=0,sum_nonint=0,sum_pol=0,sum_left=0;
-            for(auto& nt : num_txs_real){sum_real+=nt.second;}
-            int nt_real = 0;
-            if(sum_real>0){
-                nt_real = (int)((float)sum_real/(float)num_txs_real.size());
-            }
-
-            for(auto& nt : num_txs_intronic){sum_int+=nt.second;}
-            int nt_int = 0;
-            if(sum_int>0){
-                nt_int = (int)((float)sum_int/(float)num_txs_intronic.size());
-            }
-
-            for(auto& nt : num_txs_nonintronic){sum_nonint+=nt.second;}
-            int nt_nonint = 0;
-            if(sum_nonint>0){
-                nt_nonint = (int)((float)sum_nonint/(float)num_txs_nonintronic.size());
-            }
-
-            for(auto& nt : num_txs_polymerase){sum_pol+=nt.second;}
-            int nt_pol = 0;
-            if(sum_pol>0){
-                nt_pol = (int)((float)sum_pol/(float)num_txs_polymerase.size());
-            }
-
-            for(auto& nt : num_txs_left){sum_left+=nt.second;}
-            int nt_left = 0;
-            if(sum_left>0){
-                nt_left = (int)((float)sum_left/(float)num_txs_left.size());
-            }
-
-            // save the average number of transcripts per ALL locus for each type of transcripts
-            stats.num_tx_per_tissue_loc_real2.push_back(nt_real);
-            stats.num_tx_per_tissue_loc_intronic2.push_back(nt_int);
-            stats.num_tx_per_tissue_loc_nonintronic2.push_back(nt_nonint);
-            stats.num_tx_per_tissue_loc_polymerase2.push_back(nt_pol);
-            stats.num_tx_per_tissue_loc_left2.push_back(nt_left);
-            stats.num_tx_per_tissue_loc2.push_back(num_txs_total);
         }
+    }
 
+    void get_num_tx_tissue(Stats& stats){
+        // also need to write a number of transcripts per tissue to gauge whether the stage1 tissue simmulation is correct
+        std::cout<<"computing the number of transcripts of each type in a tissue"<<std::endl;
+        std::pair<std::map<std::string,std::tuple<int,int,int,int>>::iterator,bool> tt_it;
+        for(auto &atx : this->mattm){ // iterate over ALL transcripts
+            int tx_type = atx.second.type;
+            for(auto& ttx : atx.second.txs){
+                tt_it = stats.num_tx_per_tissue.insert(std::make_pair(ttx.first->second.tissue,std::make_tuple(0,0,0,0)));
+                if(tx_type == TYPE::REAL_TX){
+                    std::get<0>(tt_it.first->second)++;
+                }
+                else if(tx_type == TYPE::SPLICING_TX){
+                    std::get<1>(tt_it.first->second)++;
+                }
+                else if(tx_type == TYPE::INTRONIC_TX){
+                    std::get<2>(tt_it.first->second)++;
+                }
+                else if(tx_type == TYPE::POLYMERASE_TX){
+                    std::get<3>(tt_it.first->second)++;
+                }
+                else{
+                    continue;
+                }
+            }
+        }
+    }
+
+    void get_num_tx_per_tissue_locus5(Stats& stats){
+        std::cout<<"computing the number of transcripts of each type per tissue locus"<<std::endl;
+        std::pair<std::map<std::string,std::tuple<int,int,int,int>>::iterator,bool> ttloc5_it;
+        for(auto &atx : this->mattm){ // iterate over ALL transcripts
+            int tx_type = atx.second.type;
+            std::string tx_locus = atx.second.locus;
+            for(auto& ttx : atx.second.txs){
+                ttloc5_it = stats.num_tx_per_tissue_loc5.insert(std::make_pair(ttx.first->second.tissue+tx_locus,std::make_tuple(0,0,0,0)));
+                if(tx_type == TYPE::REAL_TX){
+                    std::get<0>(ttloc5_it.first->second)++;
+                }
+                else if(tx_type == TYPE::SPLICING_TX){
+                    std::get<1>(ttloc5_it.first->second)++;
+                }
+                else if(tx_type == TYPE::INTRONIC_TX){
+                    std::get<2>(ttloc5_it.first->second)++;
+                }
+                else if(tx_type == TYPE::POLYMERASE_TX){
+                    std::get<3>(ttloc5_it.first->second)++;
+                }
+                else{
+                    continue;
+                }
+            }
+        }
+    }
+
+    void get_num_tx_per_sample_locus4(Stats& stats){
+        std::cout<<"computing the number of transcripts per locus per sample4"<<std::endl;
+        std::pair<std::map<std::string,std::tuple<int,int,int,int>>::iterator,bool> stloc_it;
+        for(auto &atx : this->mattm){ // iterate over ALL loci
+            int tx_type = atx.second.type;
+            std::string tx_locus = atx.second.locus;
+            for(auto& ttx : atx.second.txs){
+                for(auto& sample : ttx.first->second.samples){
+                    stloc_it = stats.num_tx_per_sample_loc4.insert(std::make_pair(sample+tx_locus,std::make_tuple(0,0,0,0)));
+                    if(tx_type == TYPE::REAL_TX){
+                        std::get<0>(stloc_it.first->second) += 1;
+                    }
+                    else if(tx_type == TYPE::SPLICING_TX){
+                        std::get<1>(stloc_it.first->second) += 1;
+                    }
+                    else if(tx_type == TYPE::INTRONIC_TX){
+                        std::get<2>(stloc_it.first->second) += 1;
+                    }
+                    else if(tx_type == TYPE::POLYMERASE_TX){
+                        std::get<3>(stloc_it.first->second) += 1;
+                    }
+                    else{
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    void get_num_tx_sample(Stats& stats){
+        // now need to do the same for sample level
+        // namely we need to find how many ALL transcripts does a sample contibute to an ALL locus
+        std::cout<<"computing the number of transcripts per sample"<<std::endl;
+        std::pair<std::map<std::string,std::tuple<int,int,int,int>>::iterator,bool> st_it;
+        for(auto &atx : this->mattm){ // iterate over ALL loci
+            int tx_type = atx.second.type;
+            for(auto& ttx : atx.second.txs){
+                for(auto& sample : ttx.first->second.samples){
+                    st_it = stats.sample_txs.insert(std::make_pair(sample,std::make_tuple(0,0,0,0)));
+                    if(tx_type == TYPE::REAL_TX){
+                        std::get<0>(st_it.first->second) += 1;
+                    }
+                    else if(tx_type == TYPE::SPLICING_TX){
+                        std::get<1>(st_it.first->second) += 1;
+                    }
+                    else if(tx_type == TYPE::INTRONIC_TX){
+                        std::get<2>(st_it.first->second) += 1;
+                    }
+                    else if(tx_type == TYPE::POLYMERASE_TX){
+                        std::get<3>(st_it.first->second) += 1;
+                    }
+                    else{
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    void get_num_tx_per_tissue_locus3(Stats& stats){
+        // Now can we also compute the number of loci per tissue and per sample
+        //    as well as the number of transcripts per tissue and per sample?
+        // 1. how many true loci?
+        // 2. how many false loci?
+        // 3. how many of the true loci have noise transcripts
+
+        // need to get averages across tissues: how?
+        std::cout<<"computing the number of transcripts per locus per tissue3"<<std::endl;
+        std::map<std::string,int> num_avg_real_locs,num_avg_noise_locs,num_avg_undef_locs;
+        std::pair<std::map<std::string,int>::iterator,bool> num_it;
+        std::cout<<"number of loci: "<<this->loci.size()<<std::endl;
+        // the question that we should be asking instead is how many ALL transcripts does a given tissue contain within an ALL locus (instead of _loc and _loc2 files)
+        for(auto& loc : this->loci){ // begin iterating over all loci
+            // we only care about the composition of loci for tissues where a locus is expressed
+            std::map<std::string,std::tuple<int,int,int,int>> found_tissues; // tuple contains real,nonint,int,pol
+            std::pair<std::map<std::string,std::tuple<int,int,int,int>>::iterator,bool> ft_it;
+            for(auto& tx : loc.second.first){
+                for(auto& tissue : tx.first->second.tissues){
+                    ft_it = found_tissues.insert(std::make_pair(tissue,std::make_tuple(0,0,0,0)));
+                    if(tx.first->second.type == TYPE::REAL_TX){
+                        std::get<0>(ft_it.first->second) += 1;
+                    }
+                    else if(tx.first->second.type == TYPE::SPLICING_TX){
+                        std::get<1>(ft_it.first->second) += 1;
+                    }
+                    else if(tx.first->second.type == TYPE::INTRONIC_TX){
+                        std::get<2>(ft_it.first->second) += 1;
+                    }
+                    else if(tx.first->second.type == TYPE::POLYMERASE_TX){
+                        std::get<3>(ft_it.first->second) += 1;
+                    }
+                    else{
+                        continue;
+                    }
+                }
+            }
+            for(auto& tissue : found_tissues){
+                stats.num_tx_per_tissue_loc3.push_back(tissue.second);
+            }
+        }
+    }
+
+    void get_real_noise_locs_sample(Stats& stats){
+        std::cout<<"computing the number of real and noise ALL loci as identified in each samples"<<std::endl;
+        std::unordered_map<std::string,int> sample_locs_real,sample_locs_noise,sample_locs_other;
+        std::pair<std::unordered_map<std::string,int>::iterator,bool> sit;
+        for(auto& loc : this->loci){ // for now let's just output everything
+            int loc_type = loc.second.second;
+            std::set<std::string> all_samples;
+            for(auto& tx : loc.second.first){
+                for(auto& sx : tx.first->second.txs){
+                    all_samples.insert(sx.first->second.samples.begin(),sx.first->second.samples.end());
+                }
+            }
+            for(auto& sample : all_samples){
+                if(loc_type==1){
+                    sit = sample_locs_real.insert(std::make_pair(sample,0));
+                    sit.first->second++;
+                }
+                else if(loc_type==0){ // is 0
+                    sit = sample_locs_noise.insert(std::make_pair(sample,0));
+                    sit.first->second++;
+                }
+                else{ // is undefined
+                    continue;
+                }
+            }
+        }
+        for(auto& tt : sample_locs_real){
+            stats.num_real_locs_sample.push_back(tt.second);
+        }
+        for(auto& tt : sample_locs_noise){
+            stats.num_noise_locs_sample.push_back(tt.second);
+        }
+    }
+
+    void get_real_noise_locs_tissue(Stats& stats){
+        // compute number of loci per sample - how?
+        // do we look at the ones in main merge and trace it back?
+        // how do we tell the type of locus?
+        // if it contains any real transcripts - it is real
+
+
+        // what should we output?
+        // 1. number of noise (only RNApol transcripts in locus)
+        // 2. real loci - anything that contains nonint/int/real transcripts and not RNApol
+        // 2. other - whatever does not fit these definitions
+
+
+        // --------
+        // alternatively follow the same solution as below
+        // but instead of getting the total average - need to get a distribution instead
+        std::cout<<"computing the number of real and noise ALL loci per identified in each tissue"<<std::endl;
+        std::unordered_map<std::string,int> tissue_locs_real,tissue_locs_noise,tissue_locs_other;
+        std::pair<std::unordered_map<std::string,int>::iterator,bool> tit;
+        for(auto& loc : this->loci){ // for now let's just output everything
+            int loc_type = loc.second.second;
+            std::set<std::string> all_tissues;
+            for(auto& tx : loc.second.first){
+                all_tissues.insert(tx.first->second.tissues.begin(),tx.first->second.tissues.end());
+            }
+            for(auto& tissue : all_tissues){
+                if(loc_type==1){
+                    tit = tissue_locs_real.insert(std::make_pair(tissue,0));
+                    tit.first->second++;
+                }
+                else if(loc_type==0){ // is 0
+                    tit = tissue_locs_noise.insert(std::make_pair(tissue,0));
+                    tit.first->second++;
+                }
+                else{ // is undefined
+                    continue;
+                }
+            }
+        }
+        for(auto& tt : tissue_locs_real){
+            stats.num_real_locs_tissue.push_back(tt.second);
+        }
+        for(auto& tt : tissue_locs_noise){
+            stats.num_noise_locs_tissue.push_back(tt.second);
+        }
+    }
+
+    void get_cov_sample(Stats& stats){
+        // Now to figure out how to report coverages and the rest
+        std::cout<<"computing sample transcript coverages"<<std::endl;
+        for(auto& sit : this->mtm){
+            switch(sit.second.type){
+                case TYPE::REAL_TX:
+                    stats.cov_sample_real.push_back(sit.second.cov);
+                    stats.fpkm_sample_real.push_back(sit.second.fpkm);
+                    stats.tpm_sample_real.push_back(sit.second.tpm);
+                    break;
+                case TYPE::INTRONIC_TX:
+                    stats.cov_sample_intronic.push_back(sit.second.cov);
+                    stats.fpkm_sample_intronic.push_back(sit.second.fpkm);
+                    stats.tpm_sample_intronic.push_back(sit.second.tpm);
+                    break;
+                case TYPE::SPLICING_TX:
+                    stats.cov_sample_splicing.push_back(sit.second.cov);
+                    stats.fpkm_sample_splicing.push_back(sit.second.fpkm);
+                    stats.tpm_sample_splicing.push_back(sit.second.tpm);
+                    break;
+                case TYPE::POLYMERASE_TX:
+                    stats.cov_sample_polymerase.push_back(sit.second.cov);
+                    stats.fpkm_sample_polymerase.push_back(sit.second.fpkm);
+                    stats.tpm_sample_polymerase.push_back(sit.second.tpm);
+                    break;
+                default:
+                    stats.cov_sample_left.push_back(sit.second.cov);
+                    stats.fpkm_sample_left.push_back(sit.second.fpkm);
+                    stats.tpm_sample_left.push_back(sit.second.tpm);
+                    break;
+            }
+        }
+    }
+
+    void get_tpm_fracs_joined(Stats& stats){
+        // same for TPMs
+        std::cout<<"computing the same for the TPMs"<<std::endl;
+        for(auto& v : this->loci_sample) {
+            std::vector<float> sums_reals,sums_splicings,sums_intronics;
+            float sum_real = 0,sum_splicing = 0,sum_intronic = 0;
+            int num_real = 0,num_splicing = 0,num_intronic = 0;
+            for (auto &sit : v.second) {
+                switch(sit.first->second.type){
+                    case TYPE::REAL_TX:
+                        num_real += 1;
+                        sum_real += sit.first->second.tpm;
+                        sums_reals.push_back(sit.first->second.tpm);
+                        break;
+                    case TYPE::SPLICING_TX:
+                        num_splicing += 1;
+                        sum_splicing += sit.first->second.tpm;
+                        sums_splicings.push_back(sit.first->second.tpm);
+                        break;
+                    case TYPE::INTRONIC_TX:
+                        num_intronic += 1;
+                        sum_intronic += sit.first->second.tpm;
+                        sums_intronics.push_back(sit.first->second.tpm);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if(num_real>0){ // only do for the real transcripts
+                stats.tpm_fracs.push_back(std::tuple<int,float,int,float,int,float>(num_real,sum_real,num_splicing,sum_splicing,num_intronic,sum_intronic));
+                stats.tpms_joined.push_back(std::tuple<std::vector<float>,std::vector<float>,std::vector<float>>(sums_reals,sums_splicings,sums_intronics));
+            }
+        }
+    }
+
+    void get_cov_fracs_joined(Stats& stats){
+        // what we can do is:
+        // 1. for each locus save the mean real, mean intronic, mean splicing, mean polymerase coverages/tpms (sample level)
+        // 2. when simulating - select the fraction from the tissue
+        // 3. how will this work when the number of transcripts varries?
+
+        // also, probably shouldn't be using coverages, since they are normalized across samples with varying sequencing depth... - TPMs would be better, but then there is no way of getting a coverage/nreads out of it...
+
+        // also we should probably begin by computing distributions based on the simulation parameters, so that we know if they look similar to those observed in GTEx
+
+        // however, something like this needs to be done on the tissue level and the propagated onto the sample level - question is how??? - does it though?
+        //   on tissue level, we only get the number of samples - no need for abundance - that can be done at sample level
+
+        // question is how do we compute the fraction information. What we need:
+        // 1. TPM
+        //    - real
+        //    - nonint
+        // 2. Number of Transcripts
+        //    - real
+        //    - nonint
+        std::cout<<"computing coverage fracs and coverage joined"<<std::endl;
+        for(auto& v : this->loci_sample) {
+            std::vector<float> sums_reals,sums_splicings,sums_intronics;
+            float sum_real = 0,sum_splicing = 0,sum_intronic = 0;
+            int num_real = 0,num_splicing = 0,num_intronic = 0;
+            for (auto &sit : v.second) {
+                switch(sit.first->second.type){
+                    case TYPE::REAL_TX:
+                        num_real += 1;
+                        sum_real += sit.first->second.cov;
+                        sums_reals.push_back(sit.first->second.cov);
+                        break;
+                    case TYPE::SPLICING_TX:
+                        num_splicing += 1;
+                        sum_splicing += sit.first->second.cov;
+                        sums_splicings.push_back(sit.first->second.cov);
+                        break;
+                    case TYPE::INTRONIC_TX:
+                        num_intronic += 1;
+                        sum_intronic += sit.first->second.cov;
+                        sums_intronics.push_back(sit.first->second.cov);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if(num_real>0){ // only do for the real transcripts
+                stats.cov_fracs.push_back(std::tuple<int,float,int,float,int,float>(num_real,sum_real,num_splicing,sum_splicing,num_intronic,sum_intronic));
+                stats.covs_joined.push_back(std::tuple<std::vector<float>,std::vector<float>,std::vector<float>>(sums_reals,sums_splicings,sums_intronics));
+            }
+        }
+    }
+
+    void get_num_tx_per_sample_locus3(Stats& stats){
+        std::cout<<"computing the number of transcripts per locus per sample3"<<std::endl;
+        for(auto& loc : this->loci){ // begin iterating over all loci
+            // we only care about the composition of loci for samples where a locus is expressed
+            std::map<std::string,std::tuple<int,int,int,int>> found_samples; // tuple contains real,nonint,int,pol
+            std::pair<std::map<std::string,std::tuple<int,int,int,int>>::iterator,bool> ft_it;
+            for(auto& tx : loc.second.first){
+                for(auto& stx : tx.first->second.txs){ // now to descend onto the sample level
+                    for(auto& sample : stx.first->second.samples){
+                        ft_it = found_samples.insert(std::make_pair(sample,std::make_tuple(0,0,0,0)));
+                        if(tx.first->second.type == TYPE::REAL_TX){
+                            std::get<0>(ft_it.first->second) += 1;
+                        }
+                        else if(tx.first->second.type == TYPE::SPLICING_TX){
+                            std::get<1>(ft_it.first->second) += 1;
+                        }
+                        else if(tx.first->second.type == TYPE::INTRONIC_TX){
+                            std::get<2>(ft_it.first->second) += 1;
+                        }
+                        else if(tx.first->second.type == TYPE::POLYMERASE_TX){
+                            std::get<3>(ft_it.first->second) += 1;
+                        }
+                        else{
+                            continue;
+                        }
+                    }
+                }
+            }
+            for(auto& tissue : found_samples){
+                stats.num_tx_per_sample_loc3.push_back(tissue.second);
+            }
+        }
+    }
+
+    void get_num_tx_per_sample_locus2(Stats& stats){
         // now to figure out how to report the average number of transcripts which a sample contributes to an tissue locus
+        std::cout<<"computing the number of transcripts per sample loc2"<<std::endl;
         for(auto& lit : this->loci_tissue){
             int num_txs_total=lit.second.size();
-            std::map<std::string,int> num_txs_real,num_txs_intronic,num_txs_nonintronic,num_txs_polymerase,num_txs_left;
+            std::map<std::string,int> num_txs_real,num_txs_intronic,num_txs_splicing,num_txs_polymerase,num_txs_left;
             std::pair<std::map<std::string,int>::iterator,bool> nit;
             for(auto& tit : lit.second){
                 // each tissue should only appear once in her - make sure that is so
@@ -700,8 +1251,8 @@ public:
                             nit = num_txs_intronic.insert(std::make_pair(ts,0));
                             nit.first->second++;
                             break;
-                        case TYPE::NONINTRONIC_TX:
-                            nit = num_txs_nonintronic.insert(std::make_pair(ts,0));
+                        case TYPE::SPLICING_TX:
+                            nit = num_txs_splicing.insert(std::make_pair(ts,0));
                             nit.first->second++;
                             break;
                         case TYPE::POLYMERASE_TX:
@@ -729,10 +1280,10 @@ public:
                 nt_int = (int)((float)sum_int/(float)num_txs_intronic.size());
             }
 
-            for(auto& nt : num_txs_nonintronic){sum_nonint+=nt.second;}
+            for(auto& nt : num_txs_splicing){sum_nonint+=nt.second;}
             int nt_nonint = 0;
             if(sum_nonint>0){
-                nt_nonint = (int)((float)sum_nonint/(float)num_txs_nonintronic.size());
+                nt_nonint = (int)((float)sum_nonint/(float)num_txs_splicing.size());
             }
 
             for(auto& nt : num_txs_polymerase){sum_pol+=nt.second;}
@@ -750,82 +1301,187 @@ public:
             // save the average number of transcripts per ALL locus for each type of transcripts
             stats.num_tx_per_sample_loc_real2.push_back(nt_real);
             stats.num_tx_per_sample_loc_intronic2.push_back(nt_int);
-            stats.num_tx_per_sample_loc_nonintronic2.push_back(nt_nonint);
+            stats.num_tx_per_sample_loc_splicing2.push_back(nt_nonint);
             stats.num_tx_per_sample_loc_polymerase2.push_back(nt_pol);
             stats.num_tx_per_sample_loc_left2.push_back(nt_left);
             stats.num_tx_per_sample_loc2.push_back(num_txs_total);
         }
+    }
 
-        // Now to figure out how to report coverages and the rest
-        for(auto& sit : this->mtm){
-            switch(sit.second.type){
-                case TYPE::REAL_TX:
-                    stats.cov_sample_real.push_back(sit.second.cov);
-                    stats.fpkm_sample_real.push_back(sit.second.fpkm);
-                    stats.tpm_sample_real.push_back(sit.second.tpm);
-                    break;
-                case TYPE::INTRONIC_TX:
-                    stats.cov_sample_intronic.push_back(sit.second.cov);
-                    stats.fpkm_sample_intronic.push_back(sit.second.fpkm);
-                    stats.tpm_sample_intronic.push_back(sit.second.tpm);
-                    break;
-                case TYPE::NONINTRONIC_TX:
-                    stats.cov_sample_nonintronic.push_back(sit.second.cov);
-                    stats.fpkm_sample_nonintronic.push_back(sit.second.fpkm);
-                    stats.tpm_sample_nonintronic.push_back(sit.second.tpm);
-                    break;
-                case TYPE::POLYMERASE_TX:
-                    stats.cov_sample_polymerase.push_back(sit.second.cov);
-                    stats.fpkm_sample_polymerase.push_back(sit.second.fpkm);
-                    stats.tpm_sample_polymerase.push_back(sit.second.tpm);
-                    break;
-                default:
-                    stats.cov_sample_left.push_back(sit.second.cov);
-                    stats.fpkm_sample_left.push_back(sit.second.fpkm);
-                    stats.tpm_sample_left.push_back(sit.second.tpm);
-                    break;
+    void get_num_tx_per_tissue_locus2(Stats& stats){
+        // now to figure out how to report the average number of transcripts which a tissue contributes to an ALL locus
+        std::cout<<"computing the number of transcripts per tissue loc2"<<std::endl;
+        for(auto& lit : this->loci){
+            int num_txs_total=lit.second.first.size();
+            std::map<std::string,int> num_txs_real,num_txs_intronic,num_txs_splicing,num_txs_polymerase,num_txs_left;
+            std::pair<std::map<std::string,int>::iterator,bool> nit;
+            for(auto& tit : lit.second.first){
+                // each tissue should only appear once in her - make sure that is so
+                for(auto& ts : tit.first->second.tissues){
+                    switch(tit.first->second.type){
+                        case TYPE::REAL_TX:
+                            nit = num_txs_real.insert(std::make_pair(ts,0));
+                            nit.first->second++;
+                            break;
+                        case TYPE::INTRONIC_TX:
+                            nit = num_txs_intronic.insert(std::make_pair(ts,0));
+                            nit.first->second++;
+                            break;
+                        case TYPE::SPLICING_TX:
+                            nit = num_txs_splicing.insert(std::make_pair(ts,0));
+                            nit.first->second++;
+                            break;
+                        case TYPE::POLYMERASE_TX:
+                            nit = num_txs_polymerase.insert(std::make_pair(ts,0));
+                            nit.first->second++;
+                            break;
+                        default:
+                            nit = num_txs_left.insert(std::make_pair(ts,0));
+                            nit.first->second++;
+                            break;
+                    }
+                }
             }
+            // compute averages across tissues now
+            int sum_real=0,sum_int=0,sum_nonint=0,sum_pol=0,sum_left=0;
+            for(auto& nt : num_txs_real){sum_real+=nt.second;}
+            int nt_real = 0;
+            if(sum_real>0){
+                nt_real = (int)((float)sum_real/(float)num_txs_real.size());
+            }
+
+            for(auto& nt : num_txs_intronic){sum_int+=nt.second;}
+            int nt_int = 0;
+            if(sum_int>0){
+                nt_int = (int)((float)sum_int/(float)num_txs_intronic.size());
+            }
+
+            for(auto& nt : num_txs_splicing){sum_nonint+=nt.second;}
+            int nt_nonint = 0;
+            if(sum_nonint>0){
+                nt_nonint = (int)((float)sum_nonint/(float)num_txs_splicing.size());
+            }
+
+            for(auto& nt : num_txs_polymerase){sum_pol+=nt.second;}
+            int nt_pol = 0;
+            if(sum_pol>0){
+                nt_pol = (int)((float)sum_pol/(float)num_txs_polymerase.size());
+            }
+
+            for(auto& nt : num_txs_left){sum_left+=nt.second;}
+            int nt_left = 0;
+            if(sum_left>0){
+                nt_left = (int)((float)sum_left/(float)num_txs_left.size());
+            }
+
+            // save the average number of transcripts per ALL locus for each type of transcripts
+            stats.num_tx_per_tissue_loc_real2.push_back(nt_real);
+            stats.num_tx_per_tissue_loc_intronic2.push_back(nt_int);
+            stats.num_tx_per_tissue_loc_splicing2.push_back(nt_nonint);
+            stats.num_tx_per_tissue_loc_polymerase2.push_back(nt_pol);
+            stats.num_tx_per_tissue_loc_left2.push_back(nt_left);
+            stats.num_tx_per_tissue_loc2.push_back(num_txs_total);
         }
+    }
 
-        // Now can we also compute the number of loci per tissue and per sample
-        //    as well as the number of transcripts per tissue and per sample?
-        // 1. how many true loci?
-        // 2. how many false loci?
-        // 3. how many of the true loci have noise transcripts
+    void get_num_tx_per_sample_locus(Stats& stats){
+        // Now do the same on a sample level
+        std::cout<<"computing the number of transcripts per sample locus"<<std::endl;
+        for(auto& v : this->loci_sample){
+            int num_txs_all=0,num_txs_real=0,num_txs_intronic=0,num_txs_splicing=0,num_txs_polymerase=0,num_txs_left=0;
+            float sum_txs_all=0,sum_txs_real=0,sum_txs_intronic=0,sum_txs_splicing=0,sum_txs_polymerase=0,sum_txs_left=0;
+            for(auto& sit : v.second){
+                num_txs_all += 1;
+                switch(sit.first->second.type){
+                    case TYPE::REAL_TX:
+                        num_txs_real += 1;
+                        sum_txs_real += sit.first->second.tpm;
+                        break;
+                    case TYPE::INTRONIC_TX:
+                        num_txs_intronic += 1;
+                        sum_txs_intronic += sit.first->second.tpm;
+                        break;
+                    case TYPE::SPLICING_TX:
+                        num_txs_splicing += 1;
+                        sum_txs_splicing += sit.first->second.tpm;
+                        break;
+                    case TYPE::POLYMERASE_TX:
+                        num_txs_polymerase += 1;
+                        sum_txs_polymerase += sit.first->second.tpm;
+                        break;
+                    default:
+                        num_txs_left += 1;
+                        sum_txs_left += sit.first->second.tpm;
+                        break;
+                }
+            }
+            stats.num_tx_per_sample_loc_real.push_back(num_txs_real);
+            stats.num_tx_per_sample_loc_intronic.push_back(num_txs_intronic);
+            stats.num_tx_per_sample_loc_splicing.push_back(num_txs_splicing);
+            stats.num_tx_per_sample_loc_polymerase.push_back(num_txs_polymerase);
+            stats.num_tx_per_sample_loc_left.push_back(num_txs_left);
+            stats.num_tx_per_sample_loc.push_back(num_txs_all);
 
-        // need to get averages across tissues: how?
+            stats.sum_tx_per_sample_loc_real.push_back(sum_txs_real);
+            stats.sum_tx_per_sample_loc_intronic.push_back(sum_txs_intronic);
+            stats.sum_tx_per_sample_loc_splicing.push_back(sum_txs_splicing);
+            stats.sum_tx_per_sample_loc_polymerase.push_back(sum_txs_polymerase);
+            stats.sum_tx_per_sample_loc_left.push_back(sum_txs_left);
+            stats.sum_tx_per_sample_loc.push_back(sum_txs_all);
+        }
+    }
+
+    void get_num_tx_per_tissue_locus(Stats& stats){
+        // Now do the same on a tissue level
+        std::cout<<"computing the number of transcripts per tissue locus"<<std::endl;
+        for(auto& v : this->loci_tissue){
+            int num_txs_all=0,num_txs_real=0,num_txs_intronic=0,num_txs_splicing=0,num_txs_polymerase=0,num_txs_left=0;
+            float sum_txs_all=0,sum_txs_real=0,sum_txs_intronic=0,sum_txs_splicing=0,sum_txs_polymerase=0,sum_txs_left=0;
+            for(auto& sit : v.second){
+                num_txs_all += sit.first->second.get_num_txs();
+                switch(sit.first->second.type){
+                    case TYPE::REAL_TX:
+                        num_txs_real += sit.first->second.get_num_txs();
+                        sum_txs_real += sit.first->second.get_sum_tpms();
+                        break;
+                    case TYPE::INTRONIC_TX:
+                        num_txs_intronic += sit.first->second.get_num_txs();
+                        sum_txs_intronic += sit.first->second.get_sum_tpms();
+                        break;
+                    case TYPE::SPLICING_TX:
+                        num_txs_splicing += sit.first->second.get_num_txs();
+                        sum_txs_splicing += sit.first->second.get_sum_tpms();
+                        break;
+                    case TYPE::POLYMERASE_TX:
+                        num_txs_polymerase += sit.first->second.get_num_txs();
+                        sum_txs_polymerase += sit.first->second.get_sum_tpms();
+                        break;
+                    default:
+                        num_txs_left += sit.first->second.get_num_txs();
+                        sum_txs_left += sit.first->second.get_sum_tpms();
+                        break;
+                }
+            }
+            stats.num_tx_per_tissue_loc_real.push_back(num_txs_real);
+            stats.num_tx_per_tissue_loc_intronic.push_back(num_txs_intronic);
+            stats.num_tx_per_tissue_loc_splicing.push_back(num_txs_splicing);
+            stats.num_tx_per_tissue_loc_polymerase.push_back(num_txs_polymerase);
+            stats.num_tx_per_tissue_loc_left.push_back(num_txs_left);
+            stats.num_tx_per_tissue_loc.push_back(num_txs_all);
+
+            stats.sum_tx_per_tissue_loc_real.push_back(sum_txs_real);
+            stats.sum_tx_per_tissue_loc_intronic.push_back(sum_txs_intronic);
+            stats.sum_tx_per_tissue_loc_splicing.push_back(sum_txs_splicing);
+            stats.sum_tx_per_tissue_loc_polymerase.push_back(sum_txs_polymerase);
+            stats.sum_tx_per_tissue_loc_left.push_back(sum_txs_left);
+            stats.sum_tx_per_tissue_loc.push_back(sum_txs_all);
+        }
+    }
+
+    void get_loc_stats(Stats& stats){
         std::map<std::string,int> num_avg_real_locs,num_avg_noise_locs,num_avg_undef_locs;
         std::pair<std::map<std::string,int>::iterator,bool> num_it;
-        std::cout<<"number of loci: "<<this->loci.size()<<std::endl;
-        // old implementation using transcript identifiers
-//        for(auto& loc : this->loci){
-//            // make sure all come from the same tissue!
-//            int loc_type = loc_is_real(loc.second);
-//            std::set<std::string> all_tissues;
-//            for(auto& tx : loc.second){
-//                all_tissues.insert(tx.first->second.tissues.begin(),tx.first->second.tissues.end());
-//            }
-//            for(auto& tissue : all_tissues){
-//                if(loc_type==1){
-//                    num_it = num_avg_real_locs.insert(std::make_pair(tissue,0));
-//                    num_it.first->second++;
-//                }
-//                else if(loc_type==0){ // is 0
-//                    num_it = num_avg_noise_locs.insert(std::make_pair(tissue,0));
-//                    num_it.first->second++;
-//                }
-//                else if(loc_type=2){ // contains both noise and real transcripts
-//                    num_it = num_avg_real_locs.insert(std::make_pair(tissue,0)); // increment real
-//                    num_it.first->second++;
-//                    num_it = num_avg_noise_locs.insert(std::make_pair(tissue,0)); // increment noise
-//                    num_it.first->second++;
-//                }
-//                else{ // is undefined
-//                    num_it = num_avg_undef_locs.insert(std::make_pair(tissue,0));
-//                    num_it.first->second++;
-//                }
-//            }
-//        }
+        std::cout<<"computing average locus stats"<<std::endl;
         for(auto& loc : this->loci){
             // make sure all come from the same tissue!
             int loc_type = loc.second.second;
@@ -862,12 +1518,197 @@ public:
         stats.num_avg_noise_locs_per_tissue = (int)((float)sum_num_locs_noise/(float)num_avg_noise_locs.size());
         stats.num_avg_real_locs_per_tissue = (int)((float)sum_num_locs_real/(float)num_avg_real_locs.size());
         stats.num_avg_undef_locs_per_tissue = (int)((float)sum_num_locs_undef/(float)num_avg_undef_locs.size());
+    }
 
-        // at the end the following can be done to simulate GTFs
-        // random sampling of loci from ALL for each type
-        // for each locus use distribution of number of transcripts of each type per locus per tissue to get number of transcripts of each type
-        // get random sampling of transcripts
-        // after the gtf is generated - simulate samples based on that gtf according to the distribution (sample level) of the number of transcripts per locus in a single sample for each type
+    void get_gauss_sample_tpm_per_tissue_loc(Stats& stats){
+        // need a function which computes the parameters of a normal distribution for the number of transcripts per locus in a tissue
+        // and for the TPMs per locus in a tissue
+        // we can use this to do the following:
+        // 1. selecting total number of transcripts in a tissue (and selecting them)
+        // 2. selecting the TPMs and the number of transcripts for each sample
+        // The problem is that we will invaitable loose information about the relationship etwee real/splicing/intronic transcripts per single locus
+        //  Is there a way to construct the parameters for the joint normal distribution, which accounts for all three?
+
+        // can we turn this number into a multivariate distribution instead?
+        // for each locus, we want to know mean and covariance matrix between the 3 variants (real,splicing,intronic)
+        // however, we want to do this on a tissue level
+        // meaning that for a given tissue and a given ALL locus, what is the mean expression of each group and the covariance between them?
+
+        // for polymerase we can simply compute the mean and std
+
+        // to do this we need to store the following
+        // the problem here is that we have a different number of transcripts for each
+        // one way to circumvent this would be to build separate 1-D gausians for each type
+
+        // NEW PLAN
+        // create a distribution of means and stds to assign to each transcript in a tissue
+        // when creating samples, each tissue will be broken down into samples
+        // where each sample receives a number of each type of transcript
+        // the number which each receives can also be computed by the same distribution with respect to number of transcripts instead of TPMs
+        // and then when splitting into samples, we can simply sample from those distributions
+
+        // also initialize for the TPMS
+        // however here we might need to do on a transcript level - each transcript stored and reported individually
+//        typedef std::map<std::string,int> ST; // holds a map from transcript ID to all expressions of that transcript
+//        std::pair<std::map<std::string,int>::iterator,bool> st_it;
+        typedef std::map<std::string,std::vector<float>> STPM; // holds a map of sample to all transcripts
+        std::pair<STPM::iterator,bool> stpm_it;
+        std::map<std::string,std::array<STPM,4>> tpm_txs;
+        std::pair<std::map<std::string,std::array<STPM,4>>::iterator,bool> tp_it;
+
+        for(auto &atx : this->mattm){ // iterate over ALL transcripts
+            int tx_type = atx.second.type;
+            std::string tx_locus = atx.second.locus;
+            for(auto& ttx : atx.second.txs){
+                for(auto& stx : ttx.first->second.txs){
+                    tp_it = tpm_txs.insert(std::make_pair(stx.first->second.tissue+tx_locus,std::array<STPM,4>{STPM{},STPM{},STPM{},STPM{}}));
+                    if(tx_type == TYPE::REAL_TX){
+                        stpm_it = tp_it.first->second[0].insert(std::make_pair(atx.second.tid,std::vector<float>{}));
+                        stpm_it.first->second.push_back(stx.first->second.tpm);
+                    }
+                    else if(tx_type == TYPE::SPLICING_TX){
+                        stpm_it = tp_it.first->second[1].insert(std::make_pair(atx.second.tid,std::vector<float>{}));
+                        stpm_it.first->second.push_back(stx.first->second.tpm);
+                    }
+                    else if(tx_type == TYPE::INTRONIC_TX){
+                        stpm_it = tp_it.first->second[2].insert(std::make_pair(atx.second.tid,std::vector<float>{}));
+                        stpm_it.first->second.push_back(stx.first->second.tpm);
+                    }
+                    else if(tx_type == TYPE::POLYMERASE_TX){
+                        stpm_it = tp_it.first->second[3].insert(std::make_pair(atx.second.tid,std::vector<float>{}));
+                        stpm_it.first->second.push_back(stx.first->second.tpm);
+                    }
+                    else{
+                        continue;
+                    }
+                }
+            }
+        }
+
+        // now we need to process these to get std and mean
+        for(auto& v : tpm_txs){ // iterate over loci at the tissue level
+            for(int i=0;i<4;i++){ // iterate over the real,splice,intr,pol
+                stats.gauss_sample_tpm_per_tissue_loc.push_back(std::vector<std::pair<float,float>>{});
+                if(v.second[i].size()==0){ // no transcripts of the given type found for the tissue ALL locus
+                    stats.gauss_sample_tpm_per_tissue_loc.back().push_back(std::make_pair(0,0));
+                    continue;
+                }
+                for(auto& a : v.second[i]){ // iterate over the transcripts
+                    float total_num = 0;
+                    float sum = 0;
+                    for(auto& t : a.second){
+                        sum+=t;
+                        total_num++;
+                    }
+                    float mean = 0;
+                    if(total_num>0){
+                        mean = sum/total_num;
+                    }
+                    // compute SD
+                    float total = 0;
+                    for(auto& t : a.second){
+                        total += (t - mean)*(t - mean);
+                    }
+                    float sd = sqrt(total / total_num);
+                    stats.gauss_sample_tpm_per_tissue_loc.back().push_back(std::make_pair(mean,sd));
+                }
+            }
+        }
+    }
+
+    void get_gauss_sample_tx_per_tissue_loc(Stats& stats){
+        // what we need for this is a mean and a std for bth the number of transcripts and the corresponding tpm generators
+        std::cout<<"computing gaussians of the number of transcripts on tissue level"<<std::endl;
+        typedef std::map<std::string,int> STX;
+        std::pair<STX::iterator,bool> stx_it;
+        std::map<std::string,std::array<STX,4>> num_txs;
+        std::pair<std::map<std::string,std::array<STX,4>>::iterator,bool> nt_it;
+
+        for(auto &atx : this->mattm){ // iterate over ALL transcripts
+            int tx_type = atx.second.type;
+            std::string tx_locus = atx.second.locus;
+            for(auto& ttx : atx.second.txs){
+                for(auto& stx : ttx.first->second.txs){
+                    nt_it = num_txs.insert(std::make_pair(stx.first->second.tissue+tx_locus,std::array<STX,4>{STX{},STX{},STX{},STX{}}));
+                    if(tx_type == TYPE::REAL_TX){
+                        stx_it = nt_it.first->second[0].insert(std::make_pair(stx.first->second.sample,0));
+                        stx_it.first->second++;
+                    }
+                    else if(tx_type == TYPE::SPLICING_TX){
+                        stx_it = nt_it.first->second[1].insert(std::make_pair(stx.first->second.sample,0));
+                        stx_it.first->second++;
+                    }
+                    else if(tx_type == TYPE::INTRONIC_TX){
+                        stx_it = nt_it.first->second[2].insert(std::make_pair(stx.first->second.sample,0));
+                        stx_it.first->second++;
+                    }
+                    else if(tx_type == TYPE::POLYMERASE_TX){
+                        stx_it = nt_it.first->second[3].insert(std::make_pair(stx.first->second.sample,0));
+                        stx_it.first->second++;
+                    }
+                    else{
+                        continue;
+                    }
+                }
+            }
+        }
+
+        // now we need to process these to get std and mean
+        for(auto& v : num_txs){ // iterate over loci at the tissue level
+            for(int i=0;i<4;i++){ // iterate over the real,splice,intr,pol
+                float total_num = 0;
+                float sum = 0;
+                for(auto& a : v.second[i]){ // iterate over the samples -> for each sample map inside STX
+                    sum+=a.second;
+                    total_num++;
+                }
+                if(total_num==0){ // not present
+                    stats.gauss_sample_tx_per_tissue_loc.push_back(std::make_pair(0,0));
+                    continue;
+                }
+                float mean = sum/total_num;
+                float total = 0;
+                for(auto& a : v.second[i]){
+                    total += ((float)a.second - mean)*((float)a.second - mean);
+                }
+                float sd = sqrt(total / total_num);
+                stats.gauss_sample_tx_per_tissue_loc.push_back(std::make_pair(mean,sd));
+            }
+        }
+    }
+
+    void get_stats(Stats& stats){
+        std::cout<<"<<<computing stats"<<std::endl;
+
+//        get_num_tx_per_sample_locus(stats);
+//        get_num_tx_per_tissue_locus(stats);
+//
+//        get_num_tx_per_tissue_locus2(stats);
+//        get_num_tx_per_sample_locus2(stats);
+//
+//        get_num_tx_per_tissue_locus3(stats);
+//        get_num_tx_per_sample_locus3(stats);
+//
+//        get_cov_fracs_joined(stats);
+//        get_tpm_fracs_joined(stats);
+//
+//        get_cov_sample(stats);
+//
+//        get_real_noise_locs_tissue(stats);
+//        get_real_noise_locs_sample(stats);
+//
+//        get_num_tx_sample(stats);
+//        get_num_tx_tissue(stats);
+//
+//        get_num_tx_per_sample_locus4(stats);
+//
+//        get_num_tx_per_tissue_locus5(stats);
+//        get_num_tx_per_sample_locus5(stats);
+//
+//        get_loc_stats(stats);
+
+//        get_gauss_sample_tx_per_tissue_loc(stats);
+        get_gauss_sample_tpm_per_tissue_loc(stats);
     }
 
 private:
@@ -896,7 +1737,7 @@ private:
             if(tx.first->second.type == TYPE::REAL_TX){
                 found_real = true;
             }
-            if(tx.first->second.type == TYPE::NONINTRONIC_TX){
+            if(tx.first->second.type == TYPE::SPLICING_TX){
                 found_nonint = true;
             }
             if(tx.first->second.type == TYPE::INTRONIC_TX){
@@ -1184,40 +2025,16 @@ private:
             this->loci_it.first = loci.find(p_gffObj->getGeneID());
             if(this->loci_it.first != loci.end()){
                 if(type == TYPE::REAL_TX){
-                    if(this->loci_it.first->second.second == 0){
-                        std::cerr<<"trying to set locus: "<<p_gffObj->getGeneID()<<" as real (real), but already tagged as noise"<<std::endl;
-                        exit(-1);
-                    }
-                    else{
-                        this->loci_it.first->second.second = 1;
-                    }
+                    this->loci_it.first->second.second = 1;
                 }
-                else if(type == TYPE::NONINTRONIC_TX){
-                    if(this->loci_it.first->second.second == 0){
-                        std::cerr<<"trying to set locus: "<<p_gffObj->getGeneID()<<" as real (nonintronic), but already tagged as noise"<<std::endl;
-                        exit(-1);
-                    }
-                    else{
-                        this->loci_it.first->second.second = 1;
-                    }
+                else if(type == TYPE::SPLICING_TX){
+                    this->loci_it.first->second.second = 1;
                 }
                 else if(type == TYPE::INTRONIC_TX){
-                    if(this->loci_it.first->second.second == 1){
-//                        std::cerr<<"trying to set locus: "<<p_gffObj->getGeneID()<<" as noise (intronic), but already tagged as real"<<std::endl;
-//                        exit(-1);
-                    }
-                    else{
-                        this->loci_it.first->second.second = 0;
-                    }
+                    this->loci_it.first->second.second = 1;
                 }
                 else if(type == TYPE::POLYMERASE_TX){
-                    if(this->loci_it.first->second.second == 1){
-//                        std::cerr<<"trying to set locus: "<<p_gffObj->getGeneID()<<" as noise (polymerase), but already tagged as real"<<std::endl;
-//                        exit(-1);
-                    }
-                    else{
-                        this->loci_it.first->second.second = 0;
-                    }
+                    this->loci_it.first->second.second = 0;
                 }
                 else{
                     std::cerr<<"unknown type passed"<<std::endl;
