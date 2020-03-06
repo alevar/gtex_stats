@@ -41,6 +41,6 @@ add_executable(gtex_stats
         src/gff.h
         src/gff.cpp
         src/tokenize.cpp
-        main.cpp)
+        main.cpp src/TrackingStats.cpp src/TrackingStats.h src/TrackingTree.cpp src/TrackingTree.h)
 
 target_link_libraries(gtex_stats -lbz2 -llzma -pthread -lcrypto -lcurl -lz)
