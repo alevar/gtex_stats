@@ -1277,7 +1277,7 @@ void TrackingTree::get_gauss_sample_tx_per_tissue_loc(TrackingStats& stats){
 }
 
 void TrackingTree::get_num_tx_per_sample_locus6(TrackingStats& stats){
-    std::cout<<"computing the number of transcripts per locus per sample5"<<std::endl;
+    std::cout<<"computing the number of transcripts per locus per sample6"<<std::endl;
 
     // need to add 0 tpms for each transcript in tissue but not sample - this will help with the ordering among transcripts
     std::map<std::pair<std::string,std::string>,std::map<std::string,std::array<std::map<std::string,float>,4>>> tstt; // map of tissue loc to sample to map of transcript to float
@@ -1704,6 +1704,102 @@ void TrackingTree::get_gauss_sample_per_tissue_loc2(TrackingStats& stats){
                 float sd_tpm = sqrt(total_tpm / total_num_tpm);
                 stats.gauss_sample_per_tissue_loc.back().second.push_back(std::make_tuple(mean_tpm,sd_tpm,a.second));
             }
+        }
+    }
+}
+
+void TrackingTree::get_tx_freq(TrackingStats& stats){
+    // compute the frequency with which real vs noise transcripts occur in samples of the same tissue
+
+    // group data as:
+    //   1. tissue
+    //   2.
+    std::map<std::string,std::map<std::string,int>> tissue_freq_real; // tissue: tx,num_occurences
+    std::map<std::string,std::map<std::string,int>> tissue_freq_intronic; // tissue: tx,num_occurences
+    std::map<std::string,std::map<std::string,int>> tissue_freq_splicing; // tissue: tx,num_occurences
+    std::map<std::string,std::map<std::string,int>> tissue_freq_intergenic; // tissue: tx,num_occurences
+    std::pair<std::map<std::string,int>::iterator,bool> tft_it;
+    std::pair<std::map<std::string,std::map<std::string,int>>::iterator,bool> tf_it;
+
+    std::map<std::string,std::set<std::string>> tissue_num_samples; // tissue: all sample names
+    std::pair<std::map<std::string,std::set<std::string>>::iterator,bool> tns_it;
+
+    for(auto& att : this->mattm){ // for each transcript
+        for(auto& at : att.second.txs){ // for each tissue transcript
+            for(auto& sample: at.first->second.samples){ // for each sample this transcript here belongs to
+                tns_it = tissue_num_samples.insert(std::make_pair(at.first->second.tissue,std::set<std::string>{}));
+                tns_it.first->second.insert(sample);
+
+                if(att.second.type==TYPE::INTRONIC_TX){
+                    tf_it = tissue_freq_intronic.insert(std::make_pair(at.first->second.tissue,std::map<std::string,int>{}));
+                    tft_it = tf_it.first->second.insert(std::make_pair(att.first,0));
+                    tft_it.first->second++;
+                }
+                else if(att.second.type==TYPE::SPLICING_TX){
+                    tf_it = tissue_freq_splicing.insert(std::make_pair(at.first->second.tissue,std::map<std::string,int>{}));
+                    tft_it = tf_it.first->second.insert(std::make_pair(att.first,0));
+                    tft_it.first->second++;
+                }
+                else if(att.second.type==TYPE::intergenic_TX){
+                    tf_it = tissue_freq_intergenic.insert(std::make_pair(at.first->second.tissue,std::map<std::string,int>{}));
+                    tft_it = tf_it.first->second.insert(std::make_pair(att.first,0));
+                    tft_it.first->second++;
+                }
+                else if(att.second.type==TYPE::REAL_TX){
+                    tf_it = tissue_freq_real.insert(std::make_pair(at.first->second.tissue,std::map<std::string,int>{}));
+                    tft_it = tf_it.first->second.insert(std::make_pair(att.first,0));
+                    tft_it.first->second++;
+                }
+                else{
+                    continue;
+                }
+            }
+        }
+    }
+
+    // now time to save data to the stats
+    for(auto& v : tissue_freq_real){
+        tns_it.first = tissue_num_samples.find(v.first);
+        float num_samples = (float)tns_it.first->second.size();
+        if(num_samples==0){
+            std::cerr<<"0 samples in tissue"<<std::endl;
+            exit(-1);
+        }
+        for(auto& tx : v.second){
+            stats.tissue_tx_freq_real.push_back(((float)tx.second)/num_samples);
+        }
+    }
+    for(auto& v : tissue_freq_intronic){
+        tns_it.first = tissue_num_samples.find(v.first);
+        float num_samples = (float)tns_it.first->second.size();
+        if(num_samples==0){
+            std::cerr<<"0 samples in tissue"<<std::endl;
+            exit(-1);
+        }
+        for(auto& tx : v.second){
+            stats.tissue_tx_freq_intronic.push_back(((float)tx.second)/num_samples);
+        }
+    }
+    for(auto& v : tissue_freq_splicing){
+        tns_it.first = tissue_num_samples.find(v.first);
+        float num_samples = (float)tns_it.first->second.size();
+        if(num_samples==0){
+            std::cerr<<"0 samples in tissue"<<std::endl;
+            exit(-1);
+        }
+        for(auto& tx : v.second){
+            stats.tissue_tx_freq_splicing.push_back(((float)tx.second)/num_samples);
+        }
+    }
+    for(auto& v : tissue_freq_intergenic){
+        tns_it.first = tissue_num_samples.find(v.first);
+        float num_samples = (float)tns_it.first->second.size();
+        if(num_samples==0){
+            std::cerr<<"0 samples in tissue"<<std::endl;
+            exit(-1);
+        }
+        for(auto& tx : v.second){
+            stats.tissue_tx_freq_intergenic.push_back(((float)tx.second)/num_samples);
         }
     }
 }

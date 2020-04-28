@@ -101,6 +101,8 @@ public:
     // save_num_tx_tissue
     std::map<std::string,std::tuple<int,int,int,int>> num_tx_per_tissue;
 
+    std::vector<float> tissue_tx_freq_real,tissue_tx_freq_intronic,tissue_tx_freq_splicing,tissue_tx_freq_intergenic;
+
     void save_stats(std::string base_out_fname){
         std::cout<<"saving stats"<<std::endl;
 //        save_all_tx_stats(base_out_fname);
@@ -124,9 +126,10 @@ public:
         save_tissue_loc(base_out_fname);
         save_sample_loc(base_out_fname);
         save_sample_txs(base_out_fname);
-        save_sample_tx_stats4(base_out_fname);
+//        save_sample_tx_stats4(base_out_fname);
         save_sample_tx_stats5(base_out_fname);
         save_sample_tx_stats6(base_out_fname);
+        save_tx_freq(base_out_fname);
         std::cout<<"done saving stats"<<std::endl;
     }
 
@@ -180,6 +183,8 @@ private:
     void save_loc_stats(std::string base_out_fname);
 
     void save_num_tx_tissue(std::string base_out_fname);
+
+    void save_tx_freq(std::string base_out_fname);
 };
 
 

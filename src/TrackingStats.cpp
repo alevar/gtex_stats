@@ -659,3 +659,22 @@ void TrackingStats::save_num_tx_tissue(std::string base_out_fname){
     }
     num_tx_per_tissue_ss.close();
 }
+
+void TrackingStats::save_tx_freq(std::string base_out_fname){
+    std::string tissue_tx_freq_fname = base_out_fname+".tissue_tx_freq";
+    std::ofstream tissue_tx_freq_ss(tissue_tx_freq_fname.c_str());
+    tissue_tx_freq_ss<<"type,freq"<<std::endl;
+    for(auto& v : this->tissue_tx_freq_real){
+        tissue_tx_freq_ss<<"real"<<","<<v<<std::endl;
+    }
+    for(auto& v : this->tissue_tx_freq_intronic){
+        tissue_tx_freq_ss<<"intronic"<<","<<v<<std::endl;
+    }
+    for(auto& v : this->tissue_tx_freq_splicing){
+        tissue_tx_freq_ss<<"splicing"<<","<<v<<std::endl;
+    }
+    for(auto& v : this->tissue_tx_freq_intergenic){
+        tissue_tx_freq_ss<<"intergenic"<<","<<v<<std::endl;
+    }
+    tissue_tx_freq_ss.close();
+}

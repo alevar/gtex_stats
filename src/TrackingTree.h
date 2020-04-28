@@ -233,6 +233,8 @@ public:
 
     void get_gauss_sample_per_tissue_loc2(TrackingStats& stats);
 
+    void get_tx_freq(TrackingStats& stats);
+
     void get_stats(TrackingStats& stats){
         std::cout<<"<<<computing stats"<<std::endl;
 
@@ -261,11 +263,13 @@ public:
 //        get_gauss_sample_per_tissue_loc(stats);
 
         get_num_tx_per_sample_locus5(stats);
-        get_num_tx_per_sample_locus4(stats);
+//        get_num_tx_per_sample_locus4(stats);
         get_real_noise_locs_tissue(stats);
         get_real_noise_locs_sample(stats);
         get_num_tx_sample(stats);
         get_num_tx_per_sample_locus6(stats);
+
+        get_tx_freq(stats);
     }
 
 private:
